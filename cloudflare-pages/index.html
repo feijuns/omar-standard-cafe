@@ -997,7 +997,7 @@ th {
           <h3>訂單預覽</h3>
           <div class="preview-list" id="checkoutPreview"></div>
           <button class="primary-button" id="submitPreview" type="button">確認送出訂單</button>
-          <div class="mail-flow">送出後會將訂單通知寄給 feijuns@gmail.com，並寄送訂單確認給客人。</div>
+          <div class="mail-flow" id="orderStatus">送出後會將訂單通知寄給 feijuns@gmail.com，並寄送訂單確認給客人。</div>
         </aside>
       </div>
     </section>
@@ -1085,7 +1085,8 @@ const assortedProduct = {
 };
 const allProducts = catalogProducts.concat([assortedProduct]);
 let activeCategory = "全部";
-let cart = [];
+const CART_STORAGE_KEY = "omar-standard-cart-v1";
+let cart = loadCart();
 
 const byId = function(id) { return document.getElementById(id); };
 const formatCurrency = function(value) {
@@ -1103,6 +1104,30 @@ function showToast(message) {
   toast.classList.add("show");
   window.clearTimeout(showToast.timer);
   showToast.timer = window.setTimeout(function() { toast.classList.remove("show"); }, 1800);
+}
+
+function loadCart() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "[]");
+    return Array.isArray(stored) ? stored.filter(function(item) {
+      return item && item.key && item.name && item.variant && Number(item.price) > 0 && Number(item.quantity) > 0;
+    }).map(function(item) {
+      return {
+        key: String(item.key),
+        productId: String(item.productId || ""),
+        name: String(item.name),
+        variant: String(item.variant),
+        price: Math.round(Number(item.price)),
+        quantity: Math.max(1, Math.round(Number(item.quantity))),
+      };
+    }) : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveCart() {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
 }
 
 function renderFilters() {
@@ -1194,6 +1219,7 @@ function addToCart(productId, variantId) {
   } else {
     cart.push({ key: key, productId: productId, name: product.name, variant: variant.label, price: variant.price, quantity: 1 });
   }
+  saveCart();
   renderCart();
   showToast(product.name + " 已加入購物車");
 }
@@ -1205,6 +1231,7 @@ function updateQuantity(key, delta) {
   if (item.quantity <= 0) {
     cart = cart.filter(function(cartItem) { return cartItem.key !== key; });
   }
+  saveCart();
   renderCart();
 }
 
@@ -1315,12 +1342,89 @@ byId("shippingMethod").addEventListener("change", function() {
 byId("paymentMethod").addEventListener("change", renderCheckoutPreview);
 byId("customerName").addEventListener("input", renderCart);
 byId("customerTitle").addEventListener("change", renderCart);
-byId("clearCart").addEventListener("click", function() { cart = []; renderCart(); });
+byId("clearCart").addEventListener("click", function() { cart = []; saveCart(); renderCart(); });
 byId("cartJump").addEventListener("click", function() {
   byId("cartPanel").scrollIntoView({ behavior: "smooth", block: "start" });
 });
+
+function orderPayload() {
+  const total = totals();
+  return {
+    customer: {
+      name: byId("customerName").value.trim(),
+      title: byId("customerTitle").value,
+      phone: byId("customerPhone").value.trim(),
+      email: byId("customerEmail").value.trim(),
+      line: byId("customerLine").value.trim(),
+    },
+    shippingMethod: byId("shippingMethod").value,
+    deliveryDetail: byId("deliveryDetail").value.trim(),
+    paymentMethod: byId("paymentMethod").value,
+    note: byId("orderNote").value.trim(),
+    items: cart.map(function(item) {
+      return {
+        productId: item.productId,
+        name: item.name,
+        variant: item.variant,
+        price: item.price,
+        quantity: item.quantity,
+      };
+    }),
+    totals: total,
+  };
+}
+
+function validateOrder(payload) {
+  if (!payload.items.length) return "請先加入商品到購物車";
+  if (!payload.customer.name) return "請填寫收件人姓名";
+  if (!payload.customer.phone) return "請填寫電話";
+  if (!payload.customer.email) return "請填寫 Email";
+  if (!payload.deliveryDetail) return "請填寫配送資料";
+  return "";
+}
+
+async function submitOrder() {
+  const payload = orderPayload();
+  const message = validateOrder(payload);
+  if (message) {
+    showToast(message);
+    byId("orderStatus").textContent = message;
+    return;
+  }
+
+  const button = byId("submitPreview");
+  button.disabled = true;
+  button.textContent = "送出中...";
+  byId("orderStatus").textContent = "訂單送出中，請稍候。";
+
+  try {
+    const response = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json().catch(function() { return {}; });
+    if (!response.ok) throw new Error(result.error || "訂單送出失敗，請稍後再試");
+
+    cart = [];
+    saveCart();
+    byId("checkoutForm").reset();
+    updateShippingFields();
+    renderCart();
+    const emailText = result.emailSent ? "通知信已寄出。" : "訂單已建立，Email 尚未寄出：" + (result.emailWarning || "請確認 Resend 設定。");
+    byId("orderStatus").textContent = "訂單已送出，訂單編號：" + result.orderId + " " + emailText;
+    showToast("訂單已送出");
+  } catch (error) {
+    byId("orderStatus").textContent = error.message;
+    showToast(error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = "確認送出訂單";
+  }
+}
+
 byId("submitPreview").addEventListener("click", function() {
-  showToast("訂單已建立預覽，正式串接後會寄出通知信");
+  submitOrder();
 });
 
 renderFilters();

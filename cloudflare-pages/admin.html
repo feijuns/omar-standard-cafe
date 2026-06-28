@@ -893,7 +893,7 @@ th {
         <span class="status-dot">僅限指定帳號使用</span>
         <div class="nav">
           <button type="button" id="downloadPreview">下載 CSV</button>
-          <button type="button" id="notifyPreview">Email 通知測試</button>
+          <button type="button" id="notifyPreview">重新整理</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -928,6 +928,8 @@ th {
 
 <script>
 const headers = ["訂單編號","客戶姓名","商品名稱","規格","數量","單價","金額","售出金額","配送方式","備註","發票號碼","發票金額","收款日期","是否已出貨"];
+let orderRows = [];
+
 function showToast(message) {
   const toast = document.getElementById("toast");
   toast.textContent = message;
@@ -935,20 +937,74 @@ function showToast(message) {
   window.clearTimeout(showToast.timer);
   showToast.timer = window.setTimeout(function() { toast.classList.remove("show"); }, 1800);
 }
+
+function escapeHtml(value) {
+  return String(value == null ? "" : value).replace(/[&<>"']/g, function(char) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char];
+  });
+}
+
+function csvCell(value) {
+  return '"' + String(value == null ? "" : value).replace(/"/g, '""') + '"';
+}
+
+function authHeaders() {
+  const params = new URLSearchParams(window.location.search);
+  const urlToken = params.get("token");
+  if (urlToken) localStorage.setItem("omar-standard-admin-token", urlToken);
+  const token = urlToken || localStorage.getItem("omar-standard-admin-token");
+  return token ? { "x-admin-token": token } : {};
+}
+
+function renderRows() {
+  const body = document.getElementById("adminRows");
+  if (!orderRows.length) {
+    body.innerHTML = '<tr><td colspan="14">目前尚無訂單</td></tr>';
+    return;
+  }
+  body.innerHTML = orderRows.map(function(row) {
+    return '<tr>' + headers.map(function(header) {
+      return '<td>' + escapeHtml(row[header] || "") + '</td>';
+    }).join("") + '</tr>';
+  }).join("");
+}
+
+async function loadOrders() {
+  const body = document.getElementById("adminRows");
+  body.innerHTML = '<tr><td colspan="14">讀取訂單中...</td></tr>';
+  try {
+    const response = await fetch("/api/admin/orders", { headers: authHeaders() });
+    const result = await response.json().catch(function() { return {}; });
+    if (!response.ok) throw new Error(result.error || "無法讀取訂單資料");
+    orderRows = result.rows || [];
+    renderRows();
+    showToast("訂單資料已更新");
+  } catch (error) {
+    orderRows = [];
+    body.innerHTML = '<tr><td colspan="14">' + escapeHtml(error.message) + '</td></tr>';
+    showToast(error.message);
+  }
+}
+
 function downloadCsv() {
-  const csv = headers.map(function(cell) { return '"' + cell + '"'; }).join(",") + "\n";
+  const rows = [headers].concat(orderRows.map(function(row) {
+    return headers.map(function(header) { return row[header] || ""; });
+  }));
+  const csv = rows.map(function(row) { return row.map(csvCell).join(","); }).join("\n");
   const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "omar-standard-order-preview.csv";
+  link.download = "omar-standard-orders.csv";
   link.click();
   URL.revokeObjectURL(url);
 }
+
 document.getElementById("downloadPreview").addEventListener("click", downloadCsv);
 document.getElementById("notifyPreview").addEventListener("click", function() {
-  showToast("正式串接後會寄送通知給 feijuns@gmail.com");
+  loadOrders();
 });
+loadOrders();
 </script>
 </body>
 </html>
