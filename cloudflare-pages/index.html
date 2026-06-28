@@ -1411,8 +1411,8 @@ async function submitOrder() {
     byId("checkoutForm").reset();
     updateShippingFields();
     renderCart();
-    const emailText = result.emailSent ? "通知信已寄出。" : "訂單已建立，Email 尚未寄出：" + (result.emailWarning || "請確認 Resend 設定。");
-    byId("orderStatus").textContent = "訂單已送出，訂單編號：" + result.orderId + " " + emailText;
+    const statusText = result.lineNotificationSent ? "訂單已送出，店家已收到通知。" : "訂單已送出，請記下訂單編號。";
+    byId("orderStatus").textContent = statusText + " 訂單編號：" + result.orderId;
     showToast("訂單已送出");
   } catch (error) {
     byId("orderStatus").textContent = error.message;

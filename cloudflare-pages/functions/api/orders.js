@@ -16,16 +16,6 @@ function money(value) {
   return Math.max(0, Math.round(Number(value) || 0));
 }
 
-function escapeHtml(value) {
-  return String(value == null ? "" : value).replace(/[&<>"']/g, (char) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-  })[char]);
-}
-
 function formatCurrency(value) {
   return new Intl.NumberFormat("zh-TW").format(money(value)) + "元";
 }
@@ -132,152 +122,75 @@ async function saveOrder(env, order) {
   await env.DB.batch(inserts);
 }
 
-function orderText(order) {
-  const itemLines = order.items.map((item) =>
-    `${item.name}｜${item.variant}｜${item.quantity} x ${formatCurrency(item.unitPrice)} = ${formatCurrency(item.lineTotal)}`
+function lineOrderMessage(order) {
+  const itemLines = order.items.map((item, index) =>
+    `${index + 1}. ${item.name}｜${item.variant}｜${item.quantity} x ${formatCurrency(item.unitPrice)} = ${formatCurrency(item.lineTotal)}`
   ).join("\n");
 
   return [
-    "Omar Standard Cafe 訂單通知",
+    "Omar Standard Cafe 新訂單",
     "",
     `訂單編號：${order.id}`,
     `訂單時間：${order.createdAt}`,
-    `收件人：${order.customer.name} ${order.customer.title}`,
+    `客人姓名：${order.customer.name} ${order.customer.title}`,
     `電話：${order.customer.phone}`,
     `Email：${order.customer.email}`,
-    `Line：${order.customer.line || "-"}`,
-    `配送方式：${order.shippingMethod}`,
-    `配送資料：${order.deliveryDetail}`,
+    `LINE ID：${order.customer.line || "-"}`,
+    `運送方式：${order.shippingMethod}`,
     `付款方式：${order.paymentMethod}`,
-    `備註：${order.note || "-"}`,
+    `收件資訊：${order.deliveryDetail}`,
     "",
-    "訂購品項：",
+    "商品明細：",
     itemLines,
     "",
     `商品小計：${formatCurrency(order.totals.subtotal)}`,
     `運費：${formatCurrency(order.totals.shippingFee)}`,
     `總計：${formatCurrency(order.totals.total)}`,
-    "",
-    "付款資訊：",
-    "玉山銀行 808",
-    "帳號 0602-940-035211",
-    "戶名 歐瑪標準咖啡工作室莊斐竣",
-    "也可使用網站付款資訊中的 LINE PAY。",
+    `備註：${order.note || "-"}`,
   ].join("\n");
 }
 
-function orderHtml(order) {
-  const rows = order.items.map((item) => `
-    <tr>
-      <td style="border-bottom:1px solid #e8e2dc;padding:8px 6px;">${escapeHtml(item.name)}</td>
-      <td style="border-bottom:1px solid #e8e2dc;padding:8px 6px;">${escapeHtml(item.variant)}</td>
-      <td style="border-bottom:1px solid #e8e2dc;padding:8px 6px;text-align:right;">${item.quantity}</td>
-      <td style="border-bottom:1px solid #e8e2dc;padding:8px 6px;text-align:right;">${formatCurrency(item.unitPrice)}</td>
-      <td style="border-bottom:1px solid #e8e2dc;padding:8px 6px;text-align:right;">${formatCurrency(item.lineTotal)}</td>
-    </tr>
-  `).join("");
-
-  return `
-    <div style="font-family:Arial,'Noto Sans TC',sans-serif;line-height:1.7;color:#2f3a44;">
-      <h2 style="margin:0 0 12px;">Omar Standard Cafe 訂單通知</h2>
-      <p>
-        <strong>訂單編號：</strong>${escapeHtml(order.id)}<br>
-        <strong>訂單時間：</strong>${escapeHtml(order.createdAt)}
-      </p>
-      <p>
-        <strong>收件人：</strong>${escapeHtml(order.customer.name)} ${escapeHtml(order.customer.title)}<br>
-        <strong>電話：</strong>${escapeHtml(order.customer.phone)}<br>
-        <strong>Email：</strong>${escapeHtml(order.customer.email)}<br>
-        <strong>Line：</strong>${escapeHtml(order.customer.line || "-")}
-      </p>
-      <p>
-        <strong>配送方式：</strong>${escapeHtml(order.shippingMethod)}<br>
-        <strong>配送資料：</strong>${escapeHtml(order.deliveryDetail)}<br>
-        <strong>付款方式：</strong>${escapeHtml(order.paymentMethod)}
-      </p>
-      <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;max-width:760px;">
-        <thead>
-          <tr style="background:#f4f1ed;text-align:left;">
-            <th style="padding:8px 6px;">商品</th>
-            <th style="padding:8px 6px;">規格</th>
-            <th style="padding:8px 6px;text-align:right;">數量</th>
-            <th style="padding:8px 6px;text-align:right;">單價</th>
-            <th style="padding:8px 6px;text-align:right;">小計</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <p>
-        商品小計：${formatCurrency(order.totals.subtotal)}<br>
-        運費：${formatCurrency(order.totals.shippingFee)}<br>
-        <strong>總計：${formatCurrency(order.totals.total)}</strong>
-      </p>
-      <p><strong>備註：</strong>${escapeHtml(order.note || "-")}</p>
-      <hr style="border:0;border-top:1px solid #e8e2dc;margin:20px 0;">
-      <p>
-        付款資訊：玉山銀行 808，帳號 0602-940-035211，戶名 歐瑪標準咖啡工作室莊斐竣。<br>
-        也可使用網站付款資訊中的 LINE PAY。
-      </p>
-    </div>
-  `;
+function splitLineMessages(text) {
+  const maxLength = 4500;
+  const chunks = [];
+  let remaining = text;
+  while (remaining.length > maxLength && chunks.length < 4) {
+    let splitAt = remaining.lastIndexOf("\n", maxLength);
+    if (splitAt < 1000) splitAt = maxLength;
+    chunks.push(remaining.slice(0, splitAt));
+    remaining = remaining.slice(splitAt).trimStart();
+  }
+  chunks.push(remaining.slice(0, maxLength));
+  return chunks.map((chunk) => ({ type: "text", text: chunk }));
 }
 
-async function sendResendEmail(env, message) {
-  if (!env.RESEND_API_KEY || !env.RESEND_FROM_EMAIL) {
-    return { sent: false, warning: "尚未設定 RESEND_API_KEY 或 RESEND_FROM_EMAIL。" };
+async function sendLineOrderNotification(order, env) {
+  if (!env.LINE_CHANNEL_ACCESS_TOKEN || !env.LINE_OWNER_USER_ID) {
+    return { enabled: false, sent: false, warning: "未啟用 LINE 推播。" };
   }
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: env.RESEND_FROM_EMAIL,
-      to: message.to,
-      reply_to: message.replyTo,
-      subject: message.subject,
-      html: message.html,
-      text: message.text,
-    }),
-  });
+  try {
+    const response = await fetch("https://api.line.me/v2/bot/message/push", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.LINE_CHANNEL_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        to: env.LINE_OWNER_USER_ID,
+        messages: splitLineMessages(lineOrderMessage(order)),
+      }),
+    });
 
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(`Resend 寄信失敗：${detail}`);
+    if (!response.ok) {
+      const detail = await response.text();
+      return { enabled: true, sent: false, warning: `LINE 推播失敗：${response.status} ${detail}` };
+    }
+
+    return { enabled: true, sent: true, warning: "" };
+  } catch (error) {
+    return { enabled: true, sent: false, warning: error.message || "LINE 推播失敗。" };
   }
-
-  return { sent: true };
-}
-
-async function notifyOrder(env, order) {
-  const ownerEmail = env.OWNER_EMAIL || "feijuns@gmail.com";
-  const text = orderText(order);
-  const html = orderHtml(order);
-  const ownerSubject = `Omar Standard Cafe 新訂單 ${order.id}`;
-  const customerSubject = `Omar Standard Cafe 訂單確認 ${order.id}`;
-
-  const ownerResult = await sendResendEmail(env, {
-    to: [ownerEmail],
-    replyTo: order.customer.email,
-    subject: ownerSubject,
-    text,
-    html,
-  });
-  if (!ownerResult.sent) return ownerResult;
-
-  const customerResult = await sendResendEmail(env, {
-    to: [order.customer.email],
-    replyTo: ownerEmail,
-    subject: customerSubject,
-    text,
-    html,
-  });
-
-  return customerResult.sent
-    ? { sent: true }
-    : { sent: false, warning: customerResult.warning || "客人訂單確認信未寄出。" };
 }
 
 export async function onRequestPost(context) {
@@ -289,23 +202,16 @@ export async function onRequestPost(context) {
 
     await saveOrder(context.env, order);
 
-    let emailSent = false;
-    let emailWarning = "";
-    try {
-      const emailResult = await notifyOrder(context.env, order);
-      emailSent = Boolean(emailResult.sent);
-      emailWarning = emailResult.warning || "";
-    } catch (error) {
-      console.error(error);
-      emailWarning = "通知信寄送失敗，請店家確認 Resend 設定。";
-    }
+    const lineResult = await sendLineOrderNotification(order, context.env);
+    if (lineResult.warning && lineResult.enabled) console.error(lineResult.warning);
 
     return json({
       ok: true,
       orderId: order.id,
       total: order.totals.total,
-      emailSent,
-      emailWarning,
+      lineNotificationEnabled: lineResult.enabled,
+      lineNotificationSent: lineResult.sent,
+      lineNotificationWarning: lineResult.sent || !lineResult.enabled ? "" : "LINE 推播失敗，請店家查看 Cloudflare Functions log。",
     });
   } catch (error) {
     console.error(error);
