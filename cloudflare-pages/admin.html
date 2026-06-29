@@ -776,7 +776,7 @@ textarea:focus {
 .table-wrap { overflow: auto; }
 table {
   width: 100%;
-  min-width: 1120px;
+  min-width: 1880px;
   border-collapse: collapse;
   font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
   font-size: 12px;
@@ -901,7 +901,12 @@ th {
           <thead>
             <tr>
               <th>訂單編號</th>
-              <th>客戶姓名</th>
+              <th>訂單時間</th>
+              <th>訂購人姓名</th>
+              <th>訂購人電話</th>
+              <th>訂購人 Email</th>
+              <th>收件人姓名</th>
+              <th>收件人電話</th>
               <th>商品名稱</th>
               <th>規格</th>
               <th>數量</th>
@@ -909,7 +914,12 @@ th {
               <th>金額</th>
               <th>售出金額</th>
               <th>配送方式</th>
+              <th>配送資料</th>
+              <th>付款方式</th>
               <th>備註</th>
+              <th>商品小計</th>
+              <th>運費</th>
+              <th>訂單總計</th>
               <th>發票號碼</th>
               <th>發票金額</th>
               <th>收款日期</th>
@@ -917,7 +927,7 @@ th {
             </tr>
           </thead>
           <tbody id="adminRows">
-            <tr><td colspan="14">目前尚無訂單</td></tr>
+            <tr><td colspan="24">目前尚無訂單</td></tr>
           </tbody>
         </table>
       </div>
@@ -927,7 +937,7 @@ th {
   <div class="toast" id="toast"></div>
 
 <script>
-const headers = ["訂單編號","客戶姓名","商品名稱","規格","數量","單價","金額","售出金額","配送方式","備註","發票號碼","發票金額","收款日期","是否已出貨"];
+const headers = ["訂單編號","訂單時間","訂購人姓名","訂購人電話","訂購人 Email","收件人姓名","收件人電話","商品名稱","規格","數量","單價","金額","售出金額","配送方式","配送資料","付款方式","備註","商品小計","運費","訂單總計","發票號碼","發票金額","收款日期","是否已出貨"];
 let orderRows = [];
 
 function showToast(message) {
@@ -959,7 +969,7 @@ function authHeaders() {
 function renderRows() {
   const body = document.getElementById("adminRows");
   if (!orderRows.length) {
-    body.innerHTML = '<tr><td colspan="14">目前尚無訂單</td></tr>';
+    body.innerHTML = '<tr><td colspan="24">目前尚無訂單</td></tr>';
     return;
   }
   body.innerHTML = orderRows.map(function(row) {
@@ -971,7 +981,7 @@ function renderRows() {
 
 async function loadOrders() {
   const body = document.getElementById("adminRows");
-  body.innerHTML = '<tr><td colspan="14">讀取訂單中...</td></tr>';
+  body.innerHTML = '<tr><td colspan="24">讀取訂單中...</td></tr>';
   try {
     const response = await fetch("/api/admin/orders", { headers: authHeaders() });
     const result = await response.json().catch(function() { return {}; });
@@ -981,7 +991,7 @@ async function loadOrders() {
     showToast("訂單資料已更新");
   } catch (error) {
     orderRows = [];
-    body.innerHTML = '<tr><td colspan="14">' + escapeHtml(error.message) + '</td></tr>';
+    body.innerHTML = '<tr><td colspan="24">' + escapeHtml(error.message) + '</td></tr>';
     showToast(error.message);
   }
 }

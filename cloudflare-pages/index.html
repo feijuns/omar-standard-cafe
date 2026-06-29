@@ -41,7 +41,7 @@ h1, h2, h3, h4, p { margin: 0; }
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 80;
   min-height: 66px;
   padding: 10px clamp(16px, 4vw, 42px);
   display: flex;
@@ -246,16 +246,23 @@ h1 {
 }
 
 .toolbar {
+  position: sticky;
+  top: 66px;
+  z-index: 70;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   padding: 20px 0 18px;
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.035);
 }
 
 .products {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+  scroll-margin-top: 154px;
 }
 
 .product-card {
@@ -414,6 +421,11 @@ h1 {
   color: var(--paper);
 }
 
+.variant-grid button.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
 .cart-panel {
   position: sticky;
   top: 88px;
@@ -555,9 +567,9 @@ textarea:focus {
 
 .field-note {
   margin: 4px 0 0;
-  color: var(--accent);
+  color: var(--muted);
   font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -609,18 +621,117 @@ textarea:focus {
 
 .preview-list {
   display: grid;
-  gap: 8px;
+  gap: 12px;
   font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
   font-size: 13px;
   line-height: 1.6;
 }
 
-.preview-list div {
+.preview-section {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e1dc;
+}
+
+.preview-section h4 {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.preview-line,
+.preview-total-row {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e5e1dc;
+}
+
+.preview-line strong,
+.preview-total-row strong {
+  text-align: right;
+}
+
+.preview-items {
+  display: grid;
+  gap: 8px;
+}
+
+.preview-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid #e5e1dc;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.preview-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.preview-item strong {
+  display: block;
+  color: var(--ink);
+}
+
+.preview-item-price {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.preview-payment {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #e5e1dc;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.preview-payment .bank-list {
+  gap: 8px;
+}
+
+.preview-payment .bank-list strong {
+  font-size: 15px;
+}
+
+.preview-payment .qr-frame {
+  max-width: 180px;
+}
+
+.preview-note {
+  color: var(--muted);
+}
+
+.payment-toggle {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  font-size: 18px;
+}
+
+.payment-toggle:hover {
+  border-color: var(--ink);
+}
+
+.payment-details[hidden] {
+  display: none;
+}
+
+.payment-details {
+  margin-top: 16px;
 }
 
 .payment-title {
@@ -810,7 +921,7 @@ th {
   position: fixed;
   right: 18px;
   bottom: 18px;
-  z-index: 40;
+  z-index: 120;
   max-width: min(360px, calc(100vw - 36px));
   padding: 12px 14px;
   border: 1px solid var(--ink);
@@ -942,6 +1053,17 @@ th {
     padding: 9px 12px;
     font-size: 13px;
   }
+  .toast {
+    top: calc(var(--mobile-header-height) + 62px);
+    right: 12px;
+    bottom: auto;
+    left: 12px;
+    max-width: none;
+    transform: translateY(-140%);
+  }
+  .toast.show {
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 540px) {
@@ -1014,15 +1136,6 @@ th {
         </div>
         <div class="cart-items" id="cartItems"></div>
 
-        <div class="field">
-          <label for="shippingMethod">配送方式</label>
-          <select id="shippingMethod">
-            <option>中華郵政宅配</option>
-            <option>7-11 店到店</option>
-            <option>全家店到店</option>
-          </select>
-        </div>
-
         <div class="summary">
           <div class="summary-row"><span>商品小計</span><strong id="subtotal">0元</strong></div>
           <div class="summary-row"><span>運費</span><strong id="shippingFee">60元</strong></div>
@@ -1047,40 +1160,41 @@ th {
         <form class="form-panel" id="checkoutForm">
           <div class="form-grid">
             <div class="field">
-              <label for="customerName">收件人姓名</label>
+              <label for="customerName">姓名</label>
               <input id="customerName" autocomplete="name" placeholder="姓名" />
-            </div>
-            <div class="field">
-              <label for="customerTitle">稱謂</label>
-              <select id="customerTitle">
-                <option>先生</option>
-                <option>小姐</option>
-                <option>其他</option>
-              </select>
             </div>
             <div class="field">
               <label for="customerPhone">電話</label>
               <input id="customerPhone" autocomplete="tel" placeholder="09xx xxx xxx" />
             </div>
             <div class="field">
-              <label for="customerEmail">Email</label>
+              <label for="customerEmail">Email（非必填）</label>
               <input id="customerEmail" type="email" autocomplete="email" placeholder="name@example.com" />
+              <p class="field-note">如有提供 Email，出貨完成後將電子郵件通知。</p>
             </div>
             <div class="field">
-              <label for="customerLine">Line</label>
-              <input id="customerLine" placeholder="Line ID" />
+              <label for="shippingMethod">配送方式</label>
+              <select id="shippingMethod">
+                <option>中華郵政宅配</option>
+                <option>7-11 店到店</option>
+                <option>全家店到店</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="recipientName">收件人姓名</label>
+              <input id="recipientName" autocomplete="name" placeholder="收件人姓名" />
+            </div>
+            <div class="field">
+              <label for="recipientPhone">收件人電話</label>
+              <input id="recipientPhone" autocomplete="tel" placeholder="09xx xxx xxx" />
+            </div>
+            <div class="field full">
+              <label for="deliveryDetail" id="deliveryDetailLabel">宅配地址</label>
+              <input id="deliveryDetail" placeholder="請輸入宅配地址" />
             </div>
             <div class="field">
               <label for="paymentMethod">付款方式</label>
-              <select id="paymentMethod">
-                <option>匯款：玉山銀行</option>
-                <option>LINE PAY</option>
-              </select>
-              <p class="field-note" id="pickupPaymentNote" hidden>選擇店到店時，請在備註留下門市資訊，並依下方付款資訊完成付款。</p>
-            </div>
-            <div class="field full">
-              <label for="deliveryDetail">配送資料</label>
-              <input id="deliveryDetail" placeholder="請輸入地址或門市名稱" />
+              <select id="paymentMethod"></select>
             </div>
             <div class="field full">
               <label for="orderNote">備註</label>
@@ -1093,7 +1207,7 @@ th {
           <h3>訂單預覽</h3>
           <div class="preview-list" id="checkoutPreview"></div>
           <button class="primary-button" id="submitPreview" type="button">確認送出訂單</button>
-          <div class="mail-flow" id="orderStatus">送出後會將訂單通知寄給 feijuns@gmail.com，並寄送訂單確認給客人。</div>
+          <div class="mail-flow" id="orderStatus" aria-live="polite"></div>
         </aside>
       </div>
     </section>
@@ -1107,28 +1221,32 @@ th {
         <p class="section-lead">請確認訂單品項與數量後，再使用玉山銀行帳戶或 LINE PAY 付款。</p>
       </div>
 
-      <div class="payment-grid">
-        <article class="payment-card">
-          <div class="payment-title">
-            <h3>玉山銀行</h3>
-            <span class="eyebrow">BANK TRANSFER</span>
-          </div>
-          <div class="bank-list">
-            <div><span>銀行代號</span><strong>808（玉山銀行）</strong></div>
-            <div><span>帳號</span><strong>0602-940-035211</strong></div>
-            <div><span>戶名</span><strong>歐瑪標準咖啡工作室莊斐竣</strong></div>
-          </div>
-        </article>
+      <button class="payment-toggle" type="button" id="paymentToggle" aria-expanded="false" aria-controls="paymentDetails">付款資訊 +</button>
+      <div class="payment-details" id="paymentDetails" hidden>
+        <div class="payment-grid">
+          <article class="payment-card">
+            <div class="payment-title">
+              <h3>玉山銀行</h3>
+              <span class="eyebrow">BANK TRANSFER</span>
+            </div>
+            <div class="bank-list">
+              <div><span>銀行名稱</span><strong>玉山銀行</strong></div>
+              <div><span>銀行代號</span><strong>808（玉山銀行）</strong></div>
+              <div><span>帳號</span><strong>0602-940-035211</strong></div>
+              <div><span>戶名</span><strong>歐瑪標準咖啡工作室莊斐竣</strong></div>
+            </div>
+          </article>
 
-        <article class="payment-card">
-          <div class="payment-title">
-            <h3>LINE PAY</h3>
-            <span class="eyebrow">SCAN TO PAY</span>
-          </div>
-          <div class="qr-frame">
-            <img src="./assets/line-pay-qr.jpg" alt="LINE PAY QR Code" />
-          </div>
-        </article>
+          <article class="payment-card">
+            <div class="payment-title">
+              <h3>LINE PAY</h3>
+              <span class="eyebrow">SCAN TO PAY</span>
+            </div>
+            <div class="qr-frame">
+              <img src="./assets/line-pay-qr.jpg" alt="LINE PAY QR Code" />
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -1188,6 +1306,11 @@ const allProducts = catalogProducts.concat([assortedProduct]);
 let activeCategory = "全部";
 const CART_STORAGE_KEY = "omar-standard-cart-v1";
 let cart = loadCart();
+const PAYMENT_BANK = "匯款：玉山銀行";
+const PAYMENT_LINE = "LINE PAY";
+const PAYMENT_PICKUP = "取貨付款";
+let recipientNameEdited = false;
+let recipientPhoneEdited = false;
 
 const byId = function(id) { return document.getElementById(id); };
 const formatCurrency = function(value) {
@@ -1322,7 +1445,7 @@ function addToCart(productId, variantId) {
   }
   saveCart();
   renderCart();
-  showToast(product.name + " 已加入購物車");
+  showToast("已加入購物車：" + product.name + "｜" + variant.label + " × 1");
 }
 
 function updateQuantity(key, delta) {
@@ -1393,34 +1516,160 @@ function renderCart() {
 
 function customerName() {
   const name = byId("customerName").value.trim();
-  const title = byId("customerTitle").value;
-  return name ? name + " " + title : "尚未填寫";
+  return name || "尚未填寫";
+}
+
+function customerPhone() {
+  return byId("customerPhone").value.trim() || "尚未填寫";
+}
+
+function recipientName() {
+  return byId("recipientName").value.trim() || "尚未填寫";
+}
+
+function recipientPhone() {
+  return byId("recipientPhone").value.trim() || "尚未填寫";
+}
+
+function deliveryLabel() {
+  return byId("shippingMethod").value === "中華郵政宅配" ? "宅配地址" : "取件門市";
+}
+
+function allowedPaymentMethods() {
+  return byId("shippingMethod").value === "中華郵政宅配"
+    ? [PAYMENT_BANK, PAYMENT_LINE]
+    : [PAYMENT_BANK, PAYMENT_LINE, PAYMENT_PICKUP];
+}
+
+function renderPaymentOptions() {
+  const select = byId("paymentMethod");
+  const current = select.value || PAYMENT_BANK;
+  const methods = allowedPaymentMethods();
+  select.innerHTML = methods.map(function(method) {
+    return '<option value="' + escapeHtml(method) + '">' + escapeHtml(method) + '</option>';
+  }).join("");
+  select.value = methods.includes(current) ? current : PAYMENT_BANK;
+}
+
+function bankPaymentMarkup() {
+  return '<div class="preview-payment">' +
+    '<strong>玉山銀行匯款資料</strong>' +
+    '<div class="bank-list">' +
+      '<div><span>銀行名稱</span><strong>玉山銀行</strong></div>' +
+      '<div><span>銀行代號</span><strong>808（玉山銀行）</strong></div>' +
+      '<div><span>帳號</span><strong>0602-940-035211</strong></div>' +
+      '<div><span>戶名</span><strong>歐瑪標準咖啡工作室莊斐竣</strong></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function linePayMarkup() {
+  return '<div class="preview-payment">' +
+    '<strong>LINE PAY 付款資訊</strong>' +
+    '<p class="preview-note">請確認訂單品項與金額後，掃描下方 QR Code 完成 LINE PAY 付款。</p>' +
+    '<div class="qr-frame"><img src="./assets/line-pay-qr.jpg" alt="LINE PAY QR Code" /></div>' +
+  '</div>';
+}
+
+function previewPaymentInfo() {
+  const method = byId("paymentMethod").value;
+  if (method === PAYMENT_BANK) return bankPaymentMarkup();
+  if (method === PAYMENT_LINE) return linePayMarkup();
+  if (method === PAYMENT_PICKUP) return '<p class="preview-note">取貨時付款，無需先行匯款。</p>';
+  return "";
 }
 
 function renderCheckoutPreview() {
   const total = totals();
+  const email = byId("customerEmail").value.trim();
+  const itemCount = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
+  const itemMarkup = cart.length ? cart.map(function(item) {
+    return '<div class="preview-item">' +
+      '<div><strong>' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.variant) + '</span></div>' +
+      '<div class="preview-item-price"><strong>' + formatCurrency(item.price * item.quantity) + '</strong><span>' + formatCurrency(item.price) + ' × ' + item.quantity + '</span></div>' +
+    '</div>';
+  }).join("") : '<p class="preview-note">尚未加入商品。</p>';
+
   byId("checkoutPreview").innerHTML =
-    '<div><span>收件人</span><strong>' + escapeHtml(customerName()) + '</strong></div>' +
-    '<div><span>商品數量</span><strong>' + cart.reduce(function(sum, item) { return sum + item.quantity; }, 0) + '</strong></div>' +
-    '<div><span>配送方式</span><strong>' + escapeHtml(byId("shippingMethod").value) + '</strong></div>' +
-    '<div><span>付款方式</span><strong>' + escapeHtml(byId("paymentMethod").value) + '</strong></div>' +
-    '<div><span>訂單總計</span><strong>' + formatCurrency(total.total) + '</strong></div>';
+    '<div class="preview-section">' +
+      '<h4>訂購人</h4>' +
+      '<div class="preview-line"><span>訂購人</span><strong>' + escapeHtml(customerName()) + '</strong></div>' +
+      '<div class="preview-line"><span>電話</span><strong>' + escapeHtml(customerPhone()) + '</strong></div>' +
+      '<div class="preview-line"><span>Email</span><strong>' + escapeHtml(email || "未提供") + '</strong></div>' +
+    '</div>' +
+    '<div class="preview-section">' +
+      '<h4>訂單明細</h4>' +
+      '<div class="preview-line"><span>商品件數</span><strong>' + itemCount + '</strong></div>' +
+      '<div class="preview-items">' + itemMarkup + '</div>' +
+    '</div>' +
+    '<div class="preview-section">' +
+      '<h4>收件與配送</h4>' +
+      '<div class="preview-line"><span>收件人姓名</span><strong>' + escapeHtml(recipientName()) + '</strong></div>' +
+      '<div class="preview-line"><span>收件人電話</span><strong>' + escapeHtml(recipientPhone()) + '</strong></div>' +
+      '<div class="preview-line"><span>配送方式</span><strong>' + escapeHtml(byId("shippingMethod").value) + '</strong></div>' +
+      '<div class="preview-line"><span>' + escapeHtml(deliveryLabel()) + '</span><strong>' + escapeHtml(byId("deliveryDetail").value.trim() || "尚未填寫") + '</strong></div>' +
+    '</div>' +
+    '<div class="preview-section">' +
+      '<h4>付款方式</h4>' +
+      '<div class="preview-line"><span>付款方式</span><strong>' + escapeHtml(byId("paymentMethod").value) + '</strong></div>' +
+    '</div>' +
+    '<div class="preview-section">' +
+      '<h4>訂單總計</h4>' +
+      '<div class="preview-total-row"><span>商品小計</span><strong>' + formatCurrency(total.subtotal) + '</strong></div>' +
+      '<div class="preview-total-row"><span>運費</span><strong>' + formatCurrency(total.shipping) + '</strong></div>' +
+      '<div class="preview-total-row"><span>訂單總計</span><strong>' + formatCurrency(total.total) + '</strong></div>' +
+    '</div>' +
+    '<div class="preview-section">' +
+      '<h4>付款資訊</h4>' +
+      previewPaymentInfo() +
+    '</div>';
 }
 
 function updateShippingFields() {
   const method = byId("shippingMethod").value;
   const detail = byId("deliveryDetail");
-  const note = byId("pickupPaymentNote");
+  const label = byId("deliveryDetailLabel");
+  renderPaymentOptions();
   if (method === "7-11 店到店") {
+    label.textContent = "取件門市";
     detail.placeholder = "請輸入 7-11 門市名稱或店號";
-    note.hidden = false;
   } else if (method === "全家店到店") {
+    label.textContent = "取件門市";
     detail.placeholder = "請輸入全家門市名稱或店號";
-    note.hidden = false;
   } else {
+    label.textContent = "宅配地址";
     detail.placeholder = "請輸入宅配地址";
-    note.hidden = true;
   }
+  syncRecipientFields();
+  renderCheckoutPreview();
+}
+
+function syncRecipientFields() {
+  if (!recipientNameEdited) byId("recipientName").value = byId("customerName").value.trim();
+  if (!recipientPhoneEdited) byId("recipientPhone").value = byId("customerPhone").value.trim();
+}
+
+function scrollToFirstProduct() {
+  const firstProduct = byId("productList").querySelector(".product-card");
+  if (!firstProduct) return;
+  const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height || 0;
+  const toolbarHeight = byId("categoryFilters")?.getBoundingClientRect().height || 0;
+  const offset = headerHeight + toolbarHeight + 16;
+  const top = firstProduct.getBoundingClientRect().top + window.pageYOffset - offset;
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+}
+
+function flashAddedButton(button) {
+  if (!button) return;
+  const original = button.dataset.originalText || button.textContent;
+  button.dataset.originalText = original;
+  button.textContent = "已加入 ✓";
+  button.classList.add("active");
+  window.clearTimeout(button.addedTimer);
+  button.addedTimer = window.setTimeout(function() {
+    button.textContent = button.dataset.originalText || original;
+    button.classList.remove("active");
+  }, 1100);
 }
 
 document.addEventListener("click", function(event) {
@@ -1429,10 +1678,14 @@ document.addEventListener("click", function(event) {
     activeCategory = category.dataset.category;
     renderFilters();
     renderProducts();
+    window.requestAnimationFrame(scrollToFirstProduct);
   }
 
   const add = event.target.closest("[data-add]");
-  if (add) addToCart(add.dataset.add, add.dataset.variant);
+  if (add) {
+    addToCart(add.dataset.add, add.dataset.variant);
+    flashAddedButton(add);
+  }
 
   const qty = event.target.closest("[data-qty]");
   if (qty) updateQuantity(qty.dataset.qty, Number(qty.dataset.delta));
@@ -1452,8 +1705,25 @@ byId("shippingMethod").addEventListener("change", function() {
   renderCart();
 });
 byId("paymentMethod").addEventListener("change", renderCheckoutPreview);
-byId("customerName").addEventListener("input", renderCart);
-byId("customerTitle").addEventListener("change", renderCart);
+byId("customerName").addEventListener("input", function() {
+  syncRecipientFields();
+  renderCart();
+});
+byId("customerPhone").addEventListener("input", function() {
+  syncRecipientFields();
+  renderCart();
+});
+byId("customerEmail").addEventListener("input", renderCheckoutPreview);
+byId("recipientName").addEventListener("input", function() {
+  recipientNameEdited = true;
+  renderCheckoutPreview();
+});
+byId("recipientPhone").addEventListener("input", function() {
+  recipientPhoneEdited = true;
+  renderCheckoutPreview();
+});
+byId("deliveryDetail").addEventListener("input", renderCheckoutPreview);
+byId("orderNote").addEventListener("input", renderCheckoutPreview);
 byId("clearCart").addEventListener("click", function() { cart = []; saveCart(); renderCart(); });
 byId("cartJump").addEventListener("click", function() {
   byId("cartPanel").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1461,16 +1731,26 @@ byId("cartJump").addEventListener("click", function() {
 byId("mobileCheckoutJump").addEventListener("click", function() {
   byId("checkout").scrollIntoView({ behavior: "smooth", block: "start" });
 });
+byId("paymentToggle").addEventListener("click", function() {
+  const toggle = byId("paymentToggle");
+  const detail = byId("paymentDetails");
+  const isOpen = toggle.getAttribute("aria-expanded") === "true";
+  toggle.setAttribute("aria-expanded", String(!isOpen));
+  toggle.textContent = isOpen ? "付款資訊 +" : "付款資訊 −";
+  detail.hidden = isOpen;
+});
 
 function orderPayload() {
   const total = totals();
   return {
     customer: {
       name: byId("customerName").value.trim(),
-      title: byId("customerTitle").value,
       phone: byId("customerPhone").value.trim(),
       email: byId("customerEmail").value.trim(),
-      line: byId("customerLine").value.trim(),
+    },
+    recipient: {
+      name: byId("recipientName").value.trim(),
+      phone: byId("recipientPhone").value.trim(),
     },
     shippingMethod: byId("shippingMethod").value,
     deliveryDetail: byId("deliveryDetail").value.trim(),
@@ -1491,10 +1771,14 @@ function orderPayload() {
 
 function validateOrder(payload) {
   if (!payload.items.length) return "請先加入商品到購物車";
-  if (!payload.customer.name) return "請填寫收件人姓名";
+  if (!payload.customer.name) return "請填寫姓名";
   if (!payload.customer.phone) return "請填寫電話";
-  if (!payload.customer.email) return "請填寫 Email";
-  if (!payload.deliveryDetail) return "請填寫配送資料";
+  if (payload.customer.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.customer.email)) return "請確認 Email 格式";
+  if (!payload.shippingMethod) return "請選擇配送方式";
+  if (!payload.recipient.name) return "請填寫收件人姓名";
+  if (!payload.recipient.phone) return "請填寫收件人電話";
+  if (!payload.deliveryDetail) return "請填寫" + deliveryLabel();
+  if (!payload.paymentMethod) return "請選擇付款方式";
   return "";
 }
 
@@ -1524,6 +1808,8 @@ async function submitOrder() {
     cart = [];
     saveCart();
     byId("checkoutForm").reset();
+    recipientNameEdited = false;
+    recipientPhoneEdited = false;
     updateShippingFields();
     renderCart();
     const statusText = result.lineNotificationSent ? "訂單已送出，店家已收到通知。" : "訂單已送出，請記下訂單編號。";

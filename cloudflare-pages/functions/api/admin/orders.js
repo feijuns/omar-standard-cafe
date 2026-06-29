@@ -29,20 +29,26 @@ function rowValue(value) {
 export async function onRequestGet(context) {
   try {
     if (!isAdmin(context.request, context.env)) {
-      return json({ error: "後台尚未授權。請使用 Cloudflare Access 限定 feijuns@gmail.com，或設定 ADMIN_TOKEN 後以 /admin?token=你的密碼 開啟。" }, { status: 401 });
+      return json({ error: "沒有後台權限，請使用 Cloudflare Access 登入 feijuns@gmail.com，或設定 ADMIN_TOKEN 後以 /admin?token=你的密碼 進入。" }, { status: 401 });
     }
-    if (!context.env.DB) throw new Error("Cloudflare D1 尚未綁定，請設定 DB binding。");
+    if (!context.env.DB) throw new Error("Cloudflare D1 尚未設定，請確認 DB binding。");
 
     const result = await context.env.DB.prepare(`
       SELECT
         orders.id,
         orders.created_at,
         orders.customer_name,
-        orders.customer_title,
+        orders.customer_phone,
+        orders.customer_email,
+        orders.recipient_name,
+        orders.recipient_phone,
         orders.shipping_method,
-        orders.payment_method,
         orders.delivery_detail,
+        orders.payment_method,
         orders.note,
+        orders.subtotal,
+        orders.shipping_fee,
+        orders.total,
         order_items.product_name,
         order_items.variant,
         order_items.quantity,
@@ -56,7 +62,12 @@ export async function onRequestGet(context) {
 
     const rows = (result.results || []).map((row) => ({
       "訂單編號": rowValue(row.id),
-      "客戶姓名": `${rowValue(row.customer_name)} ${rowValue(row.customer_title)}`.trim(),
+      "訂單時間": rowValue(row.created_at),
+      "訂購人姓名": rowValue(row.customer_name),
+      "訂購人電話": rowValue(row.customer_phone),
+      "訂購人 Email": rowValue(row.customer_email),
+      "收件人姓名": rowValue(row.recipient_name || row.customer_name),
+      "收件人電話": rowValue(row.recipient_phone || row.customer_phone),
       "商品名稱": rowValue(row.product_name),
       "規格": rowValue(row.variant),
       "數量": rowValue(row.quantity),
@@ -64,11 +75,12 @@ export async function onRequestGet(context) {
       "金額": rowValue(row.line_total),
       "售出金額": rowValue(row.line_total),
       "配送方式": rowValue(row.shipping_method),
-      "備註": [
-        row.note ? `備註：${row.note}` : "",
-        row.payment_method ? `付款：${row.payment_method}` : "",
-        row.delivery_detail ? `配送資料：${row.delivery_detail}` : "",
-      ].filter(Boolean).join("；"),
+      "配送資料": rowValue(row.delivery_detail),
+      "付款方式": rowValue(row.payment_method),
+      "備註": rowValue(row.note),
+      "商品小計": rowValue(row.subtotal),
+      "運費": rowValue(row.shipping_fee),
+      "訂單總計": rowValue(row.total),
       "發票號碼": "",
       "發票金額": "",
       "收款日期": "",
@@ -78,6 +90,6 @@ export async function onRequestGet(context) {
     return json({ ok: true, rows });
   } catch (error) {
     console.error(error);
-    return json({ error: error.message || "無法讀取訂單資料" }, { status: 500 });
+    return json({ error: error.message || "讀取訂單失敗" }, { status: 500 });
   }
 }
