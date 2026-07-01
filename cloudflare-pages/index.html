@@ -1309,21 +1309,36 @@ const coffeeVariants = [
   { id: "dripBag10", label: "濾掛 / 袋裝10入", price: function(product) { return product.dripPrice * 10; } },
   { id: "dripBox10", label: "濾掛 / 盒裝10入", price: function(product) { return product.dripPrice * 10 + 20; } },
 ];
-const assortedProduct = {
-  id: "assorted-drip",
-  order: catalogProducts.length + 1,
-  categoryZh: "綜合濾掛",
-  name: "綜合濾掛",
-  tastingNotes: "袋裝與盒裝綜合濾掛",
-  infoZh: "袋 / 綜合濾掛 380 元；盒 / 綜合濾掛 400 元",
-  image: "./assets/logo-main-transparent.png",
-  kind: "assorted",
-  variants: [
-    { id: "assortedBag", label: "袋 / 綜合濾掛", price: 380 },
-    { id: "assortedBox", label: "盒 / 綜合濾掛", price: 400 },
-  ],
-};
-const allProducts = catalogProducts.concat([assortedProduct]);
+const assortedProducts = [
+  {
+    id: "assorted-drip-10",
+    order: catalogProducts.length + 1,
+    categoryZh: "綜合濾掛",
+    name: "綜合濾掛10入",
+    tastingNotes: "10 入綜合濾掛",
+    infoZh: "袋 / 綜合濾掛 380 元；盒 / 綜合濾掛 400 元",
+    image: "./assets/logo-main-transparent.png",
+    kind: "assorted",
+    variants: [
+      { id: "assorted10Bag", label: "袋 / 綜合濾掛", price: 380 },
+      { id: "assorted10Box", label: "盒 / 綜合濾掛", price: 400 },
+    ],
+  },
+  {
+    id: "assorted-drip-32",
+    order: catalogProducts.length + 2,
+    categoryZh: "綜合濾掛",
+    name: "綜合濾掛32入",
+    tastingNotes: "32 入綜合濾掛",
+    infoZh: "袋 / 綜合濾掛 1000 元",
+    image: "./assets/logo-main-transparent.png",
+    kind: "assorted",
+    variants: [
+      { id: "assorted32Bag", label: "袋 / 綜合濾掛", price: 1000 },
+    ],
+  },
+];
+const allProducts = catalogProducts.concat(assortedProducts);
 let activeCategory = "全部";
 const CART_STORAGE_KEY = "omar-standard-cart-v1";
 let cart = loadCart();
