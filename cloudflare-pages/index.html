@@ -489,6 +489,11 @@ h1 {
   font-size: 12px;
 }
 
+.cart-item-title .cart-item-note {
+  color: #6a5948;
+  line-height: 1.5;
+}
+
 .cart-actions {
   display: flex;
   align-items: center;
@@ -1105,6 +1110,459 @@ th {
   }
   .section-heading { align-items: start; flex-direction: column; }
 }
+
+.mobile-card-price,
+.mobile-card-actions,
+.product-sheet-layer {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  body.product-sheet-open {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  .products {
+    gap: 11px;
+  }
+
+  .product-card,
+  .product-card.assorted-card {
+    min-height: 194px;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .product-card .photo-slot,
+  .product-card.assorted-card .photo-slot {
+    width: 112px;
+    height: 168px;
+    aspect-ratio: 2 / 3;
+    align-self: start;
+    padding: 0;
+    border-radius: 8px;
+  }
+
+  .product-card.assorted-card .photo-slot {
+    padding: 14px;
+  }
+
+  .product-card .product-body {
+    gap: 5px;
+  }
+
+  .product-card .product-topline,
+  .product-card .info,
+  .product-card .flavor-detail,
+  .product-card .variant-grid {
+    display: none;
+  }
+
+  .product-card .product-name {
+    overflow: hidden;
+    font-size: 19px;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .product-card .notes {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .product-card .recommendation {
+    display: -webkit-box;
+    overflow: hidden;
+    min-height: 36px;
+    padding: 5px 7px;
+    border: 0;
+    border-radius: 5px;
+    background: #f4efe7;
+    color: #6a5948;
+    font-size: 12px;
+    line-height: 1.45;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .product-card .flavor-toggle {
+    display: none;
+  }
+
+  .mobile-card-price {
+    display: block;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .mobile-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: auto;
+  }
+
+  .mobile-quick-buy,
+  .mobile-detail-trigger {
+    min-height: 44px;
+    border-radius: 6px;
+    font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .mobile-quick-buy {
+    flex: 1 1 auto;
+    padding: 10px 12px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .mobile-detail-trigger {
+    flex: 0 0 auto;
+    padding: 10px 5px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .mobile-quick-buy:disabled {
+    border-color: #a8adb2;
+    background: #a8adb2;
+    cursor: not-allowed;
+  }
+
+  .product-sheet-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    align-items: end;
+  }
+
+  .product-sheet-layer[hidden] {
+    display: none;
+  }
+
+  .product-sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(25, 31, 37, 0.36);
+    opacity: 0;
+    transition: opacity 300ms ease-out;
+  }
+
+  .product-sheet {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-height: 92dvh;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    overflow: hidden;
+    border-radius: 22px 22px 0 0;
+    background: #fffdf9;
+    box-shadow: 0 -18px 48px rgba(25, 31, 37, 0.2);
+    color: var(--ink);
+    transform: translateY(102%);
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .product-sheet:focus {
+    outline: none;
+  }
+
+  .product-sheet-layer.is-open .product-sheet-backdrop {
+    opacity: 1;
+  }
+
+  .product-sheet-layer.is-open .product-sheet {
+    transform: translateY(0);
+  }
+
+  .product-sheet-layer.is-closing .product-sheet {
+    transform: translateY(102%);
+    transition-duration: 240ms;
+  }
+
+  .product-sheet-header {
+    position: relative;
+    padding: 22px 56px 14px 20px;
+    border-bottom: 1px solid var(--line);
+    background: #fffdf9;
+  }
+
+  .product-sheet-handle {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    width: 42px;
+    height: 4px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: #bdc0c3;
+    transform: translateX(-50%);
+    touch-action: none;
+  }
+
+  .product-sheet-title {
+    overflow: hidden;
+    font-size: 20px;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .product-sheet-subtitle {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .product-sheet-close {
+    position: absolute;
+    top: 17px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 25px;
+    line-height: 1;
+  }
+
+  .product-sheet-scroll {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 18px 20px 22px;
+    scrollbar-gutter: stable;
+  }
+
+  .sheet-detail {
+    display: grid;
+    gap: 14px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sheet-detail[hidden] {
+    display: none;
+  }
+
+  .sheet-detail h3,
+  .sheet-buy-area legend,
+  .sheet-field-label {
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .sheet-overall {
+    color: #4e555c;
+    font-size: 14px;
+    line-height: 1.75;
+    white-space: pre-line;
+  }
+
+  .sheet-score-list {
+    display: grid;
+    gap: 9px;
+  }
+
+  .sheet-score-row {
+    display: grid;
+    grid-template-columns: 42px 48px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .sheet-score-row strong {
+    font-size: 13px;
+  }
+
+  .sheet-score-row span {
+    color: var(--muted);
+  }
+
+  .sheet-score-row em {
+    color: #4e555c;
+    font-style: normal;
+  }
+
+  .sheet-buy-area {
+    display: grid;
+    gap: 16px;
+    padding-top: 18px;
+  }
+
+  .sheet-buy-area fieldset {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .sheet-buy-area legend {
+    margin-bottom: 9px;
+  }
+
+  .sheet-variant {
+    position: relative;
+    min-height: 48px;
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    border: 1px solid #cfd2d5;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 14px;
+  }
+
+  .sheet-variant:has(input:checked) {
+    border-color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+
+  .sheet-variant.is-sold-out {
+    opacity: 0.55;
+  }
+
+  .sheet-variant input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--ink);
+  }
+
+  .sheet-variant-price {
+    font-weight: 700;
+  }
+
+  .sheet-purchase-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .sheet-quantity {
+    display: grid;
+    grid-template-columns: 44px 42px 44px;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid #cfd2d5;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .sheet-quantity button {
+    min-width: 44px;
+    min-height: 44px;
+    border: 0;
+    background: #fff;
+    color: var(--ink);
+    font-size: 20px;
+  }
+
+  .sheet-quantity button:disabled {
+    color: #b8bcc0;
+  }
+
+  .sheet-quantity output {
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .sheet-note-wrap {
+    display: grid;
+    gap: 7px;
+  }
+
+  .sheet-note {
+    width: 100%;
+    min-height: 84px;
+    resize: vertical;
+    padding: 11px 12px;
+    border: 1px solid #cfd2d5;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .sheet-note-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .sheet-error {
+    margin: 0;
+    color: #9b3f35;
+    font-size: 13px;
+  }
+
+  .sheet-error[hidden] {
+    display: none;
+  }
+
+  .product-sheet-footer {
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: rgba(255, 253, 249, 0.98);
+    box-shadow: 0 -8px 24px rgba(25, 31, 37, 0.06);
+  }
+
+  .sheet-add-button {
+    width: 100%;
+    min-height: 50px;
+    border: 1px solid var(--ink);
+    border-radius: 7px;
+    background: var(--ink);
+    color: #fff;
+    font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .sheet-add-button:disabled {
+    border-color: #a8adb2;
+    background: #a8adb2;
+    cursor: not-allowed;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-sheet,
+  .product-sheet-backdrop {
+    transition-duration: 1ms !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -1299,6 +1757,51 @@ th {
     <button class="primary-button" id="mobileCheckoutJump" type="button">前往結帳</button>
   </div>
 
+  <div class="product-sheet-layer" id="productSheetLayer" hidden>
+    <button class="product-sheet-backdrop" type="button" data-sheet-close aria-label="關閉購買視窗"></button>
+    <section class="product-sheet" id="productSheet" role="dialog" aria-modal="true" aria-labelledby="productSheetTitle" tabindex="-1">
+      <header class="product-sheet-header">
+        <div class="product-sheet-handle" id="productSheetHandle" aria-hidden="true"></div>
+        <h2 class="product-sheet-title" id="productSheetTitle"></h2>
+        <p class="product-sheet-subtitle" id="productSheetSubtitle"></p>
+        <button class="product-sheet-close" type="button" data-sheet-close aria-label="關閉購買視窗">×</button>
+      </header>
+      <div class="product-sheet-scroll" id="productSheetScroll">
+        <section class="sheet-detail" id="sheetDetail">
+          <h3>風味說明</h3>
+          <p class="sheet-overall" id="sheetOverall"></p>
+          <div>
+            <h3>風味輪廓</h3>
+            <div class="sheet-score-list" id="sheetScoreList"></div>
+          </div>
+        </section>
+        <div class="sheet-buy-area">
+          <fieldset>
+            <legend>選擇規格</legend>
+            <div id="sheetVariants"></div>
+          </fieldset>
+          <div class="sheet-purchase-row">
+            <span class="sheet-field-label">數量</span>
+            <div class="sheet-quantity" aria-label="商品數量">
+              <button id="sheetQtyMinus" type="button" aria-label="減少數量">−</button>
+              <output id="sheetQuantity" aria-live="polite">1</output>
+              <button id="sheetQtyPlus" type="button" aria-label="增加數量">＋</button>
+            </div>
+          </div>
+          <label class="sheet-note-wrap" for="sheetNote">
+            <span class="sheet-field-label">備註</span>
+            <textarea class="sheet-note" id="sheetNote" maxlength="200" placeholder="例如：送禮需求、延後出貨、其他需求"></textarea>
+            <span class="sheet-note-meta"><span>選填，保留換行</span><span id="sheetNoteCount">0 / 200</span></span>
+          </label>
+          <p class="sheet-error" id="sheetError" role="alert" hidden></p>
+        </div>
+      </div>
+      <footer class="product-sheet-footer">
+        <button class="sheet-add-button" id="sheetAddButton" type="button" disabled>請先選擇規格</button>
+      </footer>
+    </section>
+  </div>
+
 <script>
 const catalogProducts = [{"id":"bean-01","order":1,"categoryZh":"日曬 & 蜜處理","name":"豔夏花荔","englishName":"Lychee Floral","tastingNotes":"水蜜桃、荔枝、玫瑰、烏龍茶","infoZh":"哥倫比亞 / 考卡 / 天堂莊園 / 淺中焙 / 雙重厭氧處理 卡斯提優 & 卡杜拉","infoEn":"Colombia Cauca Finca El Paraiso Castillo & Caturra Double Anaerobic","halfPoundPrice":560,"dripPrice":44,"recommendation":"推薦給想喝明亮茶感與高辨識度花果風味的客人。","review":{"overall":"水蜜桃與荔枝的香氣甜美清亮，玫瑰花韻細緻，烏龍茶感讓尾韻更乾淨。整體風格優雅而有辨識度，酸甜平衡佳，適合喜歡花果香與茶感層次的客人。","aromaScore":8.5,"aromaText":"荔枝、水蜜桃、玫瑰","flavorScore":8.5,"flavorText":"水蜜桃、荔枝、烏龍茶","acidityScore":7,"acidityText":"強度中等；蜜桃與熱帶果酸質","sweetnessScore":8,"sweetnessText":"強度中偏高；熟果甜感","bodyScore":6.5,"bodyText":"厚度中等；茶感滑順"},"image":"./assets/bean-01.webp"},{"id":"bean-02","order":2,"categoryZh":"日曬 & 蜜處理","name":"酒釀可可","englishName":"Winey Cocoa","tastingNotes":"草莓、熱帶水果、玫瑰、微酒香","infoZh":"哥斯大黎加 / 塔拉珠 / 卡內特莊園 / 中焙 / 葡萄乾蜜處理 卡杜拉","infoEn":"Costa Rica Tarrazu Canet Estate Caturra Raisin Honey","halfPoundPrice":560,"dripPrice":44,"recommendation":"推薦給想要一杯成熟奔放但不失優雅的客人。","review":{"overall":"草莓與熱帶水果帶出明顯發酵果香，微酒香增加成熟感，玫瑰花韻讓整體不至於厚重。風格甜潤奔放，酸質柔和，適合喜歡酒香、果乾與甜感飽滿表現的客人。","aromaScore":8,"aromaText":"草莓、玫瑰、微酒香","flavorScore":8,"flavorText":"草莓、熱帶水果、酒釀感","acidityScore":6.5,"acidityText":"強度中等；莓果酸質柔和","sweetnessScore":8,"sweetnessText":"強度中偏高；果乾甜感","bodyScore":7,"bodyText":"厚度中等；甜潤飽滿"},"image":"./assets/bean-02.webp"},{"id":"bean-03","order":3,"categoryZh":"日曬 & 蜜處理","name":"熱帶果園","englishName":"Tropical Orchard","tastingNotes":"鳳梨、芒果、熱帶水果、玫瑰","infoZh":"哥斯大黎加 / 塔拉珠 / 卡內特莊園 / 中焙 / 葡萄乾蜜處理 F1","infoEn":"Costa Rica Tarrazu Canet Estate F1 Raisin Honey","halfPoundPrice":520,"dripPrice":42,"recommendation":"推薦給想喝陽光系酸甜層次的客人。","review":{"overall":"奔放的熱帶果香中帶著柔和玫瑰花韻，鳳梨與芒果的酸甜堆疊出飽滿層次。整體明亮鮮活、甜潤細膩，尾韻乾淨悠長，如陽光灑落果園般的歡愉與明媚。","aromaScore":8.5,"aromaText":"鳳梨、芒果、花香","flavorScore":8,"flavorText":"熱帶水果、鳳梨、玫瑰","acidityScore":7.5,"acidityText":"強度中等；鳳梨酸質","sweetnessScore":8,"sweetnessText":"強度中偏高；熟果甜感","bodyScore":6.5,"bodyText":"厚度中等；圓潤果感"},"image":"./assets/bean-03.webp"},{"id":"bean-04","order":4,"categoryZh":"日曬 & 蜜處理","name":"月見山茶","englishName":"Camellia","tastingNotes":"葡萄汁、酒釀櫻桃、溫帶水果、優雅花香","infoZh":"衣索比亞 / 古吉 / 布穀雪依莎 / 淺焙 / 日曬 古優種","infoEn":"Ethiopia Oromia Guji Hambella Buku Sayisa Heirloom Natural","halfPoundPrice":500,"dripPrice":40,"recommendation":"推薦給想喝甜潤果感的客人。","review":{"overall":"花香與果酸交融，呈現典型日曬藝索比亞的奔放與甜潤。茶感尾韻乾淨悠長，風味平衡明亮，是傳統古吉日曬風格的經典代表。","aromaScore":7,"aromaText":"葡萄、花香、果香","flavorScore":7.5,"flavorText":"葡萄汁、酒釀櫻桃、花香","acidityScore":6,"acidityText":"強度中等；溫帶水果酸質","sweetnessScore":7,"sweetnessText":"強度中等；棉糖甜感","bodyScore":7.5,"bodyText":"厚度中等；茶感圓潤"},"image":"./assets/bean-04.webp"},{"id":"bean-05","order":5,"categoryZh":"日曬 & 蜜處理","name":"甜橙伯爵","englishName":"Orange Earl Grey","tastingNotes":"甜橙、玫瑰、葡萄乾、伯爵紅茶","infoZh":"哥斯大黎加 / 塔拉珠 / 科佩莊園 / 淺中焙 / 紅蜜處理 維拉沙奇","infoEn":"Costa Rica Tarrazu Hacienda Copey Villa Sarchi Red Honey","halfPoundPrice":420,"dripPrice":37,"recommendation":"推薦給想要優雅柑橘茶感的客人。","review":{"overall":"甜橙香氣柔和帶花韻，與玫瑰及伯爵茶的細緻香氣相融。整體明亮而優雅，展現果香與茶香之間細膩的平衡與層次。","aromaScore":7.5,"aromaText":"甜橙、玫瑰、優雅花香","flavorScore":8,"flavorText":"甜橙、果乾、伯爵茶","acidityScore":7,"acidityText":"強度中等；柑橘酸質","sweetnessScore":7,"sweetnessText":"強度中等；蜂蜜甜感","bodyScore":6,"bodyText":"厚度中等；茶感滑順"},"image":"./assets/bean-05.webp"},{"id":"bean-06","order":6,"categoryZh":"日曬 & 蜜處理","name":"果茶派對","englishName":"Fruit tea Party","tastingNotes":"草莓、白花、葡萄柚、水果茶","infoZh":"哥斯大黎加 / 中央谷地 / 拉斯拉哈斯莊園 / 中焙 / 厭氧紅蜜處理 卡杜拉","infoEn":"Costa Rica Central Valley Finca Las Lajas Caturra Anaerobic Red Honey","halfPoundPrice":420,"dripPrice":37,"recommendation":"推薦給想喝清爽活潑風味的客人。","review":{"overall":"草莓與葡萄柚的明亮酸甜在口中綻放，白花香氣點亮整體層次。\n尾韻乾淨如水果茶般清爽，香氣熱鬧卻不雜亂，讓人感受愉悅與活力。","aromaScore":8,"aromaText":"草莓、白花","flavorScore":7.5,"flavorText":"草莓、葡萄柚、水果茶","acidityScore":7,"acidityText":"強度中等；莓果酸質","sweetnessScore":7,"sweetnessText":"強度中等；棉糖甜感","bodyScore":6,"bodyText":"厚度中等；茶感滑順"},"image":"./assets/bean-06.webp"},{"id":"bean-07","order":7,"categoryZh":"日曬 & 蜜處理","name":"青花嬌","englishName":"Green Pepper","tastingNotes":"花椒、荳蔻、青胡椒、尾韻帶薰衣草風味","infoZh":"巴西 / 南米納斯 / 皇棕梠莊園 / 中焙 / 雙重厭氧日曬 黃玉","infoEn":"Brazil Sul de Minas Fazenda Guariroba Topázio Double Anaerobic Natural","halfPoundPrice":420,"dripPrice":37,"recommendation":"推薦給想嘗試非典型咖啡的客人。","review":{"overall":"花椒與豆蔻的辛香交錯，薰衣草香氣在尾韻緩緩綻放。\n結構厚實而獨特，帶出少見的香料層次與優雅收斂感，個性鮮明。","aromaScore":7.5,"aromaText":"花椒、豆蔻、薰衣草","flavorScore":7.5,"flavorText":"香料、堅果、薰衣草","acidityScore":6,"acidityText":"強度中偏弱；柔和酸質","sweetnessScore":7,"sweetnessText":"強度中等；棉糖甜感","bodyScore":8,"bodyText":"厚度中等；厚實滑順"},"image":"./assets/bean-07.webp"},{"id":"bean-08","order":8,"categoryZh":"日曬 & 蜜處理","name":"暮紫","englishName":"Twilight Purple","tastingNotes":"柑橘、橙花、李子酸、葡萄乾","infoZh":"衣索比亞 / 耶加雪菲 / 確幸處理廠 / 淺焙 / 日曬 74110","infoEn":"Ethiopia Yirgacheffe Gedeo Kindu 74110 Natural","halfPoundPrice":380,"dripPrice":33,"recommendation":"推薦給想喝溫柔但有深度日曬風味的客人。","review":{"overall":"李子與葡萄乾的熟果調性濃郁而富層次，橙花香氣點綴其中，增添優雅韻味。酸甜平衡細膩，尾韻帶有果乾般的溫潤與厚實，展現溫和卻深刻的魅力。","aromaScore":7.5,"aromaText":"橙花、柑橘、葡萄乾","flavorScore":8,"flavorText":"柑橘、李子、葡萄乾","acidityScore":6,"acidityText":"強度中等；柑橘酸質","sweetnessScore":7,"sweetnessText":"強度中等；紅糖甜感","bodyScore":6,"bodyText":"厚度中等；茶感滑順"},"image":"./assets/bean-08.webp"},{"id":"bean-09","order":9,"categoryZh":"日曬 & 蜜處理","name":"花曦","englishName":"Floral Dawn","tastingNotes":"柑橘、茉莉、瓜果香、甜香","infoZh":"衣索比亞 / 西達馬 / 康卡納處理廠 / 淺焙 / 雙重厭氧蜜處理 74110 、 74112","infoEn":"Ethiopia Sidama Bensa Qonqona 74110 & 74112 Double Anaerobic Honey","halfPoundPrice":380,"dripPrice":33,"recommendation":"推薦給想喝清新花果調性的客人。","review":{"overall":"清新的柑橘與茉莉花香為基調，融合瓜果般的飽滿香甜。整體風格明亮而柔和，尾韻帶有花香餘韻，呈現晨曦般的清新氛圍，令人回味無窮。","aromaScore":7.5,"aromaText":"茉莉、橙花、柑橘","flavorScore":8,"flavorText":"柑橘、茉莉、瓜果香","acidityScore":7,"acidityText":"強度中等；柑橘酸質","sweetnessScore":7,"sweetnessText":"強度中等；蔗糖甜感","bodyScore":6,"bodyText":"厚度中等；茶感滑順"},"image":"./assets/bean-09.webp"},{"id":"bean-10","order":10,"categoryZh":"水洗 & 濕剝法","name":"茉莉蜜茶","englishName":"Jasmine Honey Tea","tastingNotes":"榛果、桂圓、蜂蜜、茉莉綠茶","infoZh":"印尼 / 蘇門答臘 / 亞齊 / 梅利亞莊園 / 淺中焙 / 茉莉厭氧水洗 鐵皮卡","infoEn":"Indonesia Sumatra Aceh Gayo Typica Anaerobic Washed","halfPoundPrice":560,"dripPrice":44,"recommendation":"推薦給想找少見印尼精緻風味的客人。","review":{"overall":"茉莉花香清晰，伴隨綠綿綿茶韻，風味表現鮮明而具辨識度。後段與堅果及其獨特甜感，間斷保有厚實飽滿的口感，展現少見且珍貴的風味組合，值得細細品味。","aromaScore":7.5,"aromaText":"茉莉花、榛果、桂圓","flavorScore":8,"flavorText":"茉莉花、茶香、榛果","acidityScore":6.5,"acidityText":"強度中等、蘋果酸質","sweetnessScore":8,"sweetnessText":"強度中偏高；蜂蜜甜感","bodyScore":6,"bodyText":"厚度中偏高、圓潤滑順"},"image":"./assets/bean-10.webp"},{"id":"bean-11","order":11,"categoryZh":"水洗 & 濕剝法","name":"琥珀琴酒","englishName":"Amber Gin","tastingNotes":"琴酒、黃金糖、水蜜桃、迷迭香","infoZh":"衣索比亞 / 西達摩 / 厭氧水洗 古優種","infoEn":"Ethiopia Sidamo Heirloom Anaerobic Washed","halfPoundPrice":560,"dripPrice":44,"recommendation":"推薦給想喝帶調酒感特殊風味的客人。","review":{"overall":"琴酒般的清爽草本香氣與迷迭香尾韻相當有個性，水蜜桃與黃金糖甜感讓整體不顯尖銳。杯型乾淨、風味辨識度高，是一支帶有調酒感與草本層次的特殊風格咖啡。","aromaScore":8,"aromaText":"琴酒、迷迭香、水蜜桃","flavorScore":8,"flavorText":"琴酒、黃金糖、草本香","acidityScore":7,"acidityText":"強度中等；水蜜桃酸質","sweetnessScore":7.5,"sweetnessText":"強度中偏高；黃金糖甜感","bodyScore":6.5,"bodyText":"厚度中等；清爽滑順"},"image":"./assets/bean-11.webp"},{"id":"bean-12","order":12,"categoryZh":"水洗 & 濕剝法","name":"莓果樂章","englishName":"Berry Symphony","tastingNotes":"玫瑰、紅色莓果、柳橙、綠茶","infoZh":"哥斯大黎加 / 塔拉珠 / 卡內特莊園 / 淺焙 / 酵素水洗 卡杜拉","infoEn":"Costa Rica Tarrazu Canet Estate Caturra Enzymatic Washed","halfPoundPrice":500,"dripPrice":40,"recommendation":"推薦給想喝優雅明亮果香的客人。","review":{"overall":"玫瑰與莓果香氣優雅奔放，搭配柳橙般的清爽果酸，呈現出鮮明而俐落的風味層次。綠茶般的尾韻輕盈悠長，讓杯中樂章有如交響般協調動人。","aromaScore":8,"aromaText":"紅色莓果、玫瑰、柳橙","flavorScore":8,"flavorText":"紅色莓果、柳橙、綠茶","acidityScore":7,"acidityText":"強度中等；莓果酸質","sweetnessScore":7.5,"sweetnessText":"強度中等；紅糖甜感","bodyScore":6,"bodyText":"厚度中等；茶感輕盈"},"image":"./assets/bean-12.webp"},{"id":"bean-13","order":13,"categoryZh":"水洗 & 濕剝法","name":"甜甜紅李","englishName":"Sweet Red Plum","tastingNotes":"紅肉李、蜜餞、脆梅、黃金糖","infoZh":"肯亞 / 祈安布 / 娜朵娜朵處理廠 / 中焙 / 水洗 SL28 、 Ruiru11","infoEn":"Kenya Kiambu Ndundu SL28 、 Ruiru11 Washed","halfPoundPrice":500,"dripPrice":40,"recommendation":"推薦給想喝明亮肯亞個性的客人。","review":{"overall":"甜美的紅李香氣鮮明，搭配脆梅與蜜餞的酸甜韻味，展現出清爽而具辨識度的肯亞特徵。黃金糖般的甜感平衡酸質，整體風格明亮、活潑且具層次。","aromaScore":7.5,"aromaText":"紅李、蜜餞","flavorScore":8,"flavorText":"紅李、脆梅、黃金糖","acidityScore":8.5,"acidityText":"強度中偏高；脆梅酸質","sweetnessScore":8,"sweetnessText":"強度中偏高；黃金糖甜感","bodyScore":7,"bodyText":"厚度中等；茶感滑順"},"image":"./assets/bean-13.webp"},{"id":"bean-14","order":14,"categoryZh":"水洗 & 濕剝法","name":"黑內拉將軍","englishName":"General El","tastingNotes":"柑橘、莓果、蜂蜜、果乾","infoZh":"瓜地馬拉 / 阿卡特南果 / 黑內拉將軍莊園 / 中焙 / 水洗 波旁","infoEn":"Guatemala Acatenango Finca El General Bourbon Washed","halfPoundPrice":420,"dripPrice":37,"recommendation":"推薦給想喝穩重中南美水洗風格的客人。","review":{"overall":"甜潤蜂蜜與果乾香氣交錯，構築出沉穩的中南美調性。酸質明亮卻不銳利，莓果的圓潤香甜與柑橘清爽共舞，餘韻帶出蜜香與焦糖般的厚實感，展現將軍般的穩重與層次。","aromaScore":7.5,"aromaText":"莓果、果乾、蜂蜜","flavorScore":8,"flavorText":"柑橘、莓果、蜂蜜","acidityScore":7,"acidityText":"強度中等；柑橘酸質","sweetnessScore":7.5,"sweetnessText":"強度中等；蜂蜜甜感","bodyScore":7,"bodyText":"厚度中等；飽滿滑順"},"image":"./assets/bean-14.webp"},{"id":"bean-15","order":15,"categoryZh":"水洗 & 濕剝法","name":"黃金曼特寧","englishName":"Mandheling","tastingNotes":"藥草、奶油、核桃、巧克力","infoZh":"印尼 / 蘇門答臘 / 林東 / 中深焙 / 濕剝 鐵皮卡","infoEn":"Indonesia Sumatra Lingtong Typica","halfPoundPrice":420,"dripPrice":37,"recommendation":"推薦給偏好經典曼特寧的客人。","review":{"overall":"藥草與核桃香氣沉穩，奶油質地與巧克力尾韻構成經典曼特寧的厚實輪廓。酸質低調、口感飽滿，整體偏溫潤厚實，適合喜歡低酸、草本、堅果與巧克力感的客人。","aromaScore":7,"aromaText":"藥草、核桃、巧克力","flavorScore":7.5,"flavorText":"藥草、奶油、核桃","acidityScore":5.5,"acidityText":"強度偏低；柔和酸質","sweetnessScore":7,"sweetnessText":"強度中等；焦糖甜感","bodyScore":8.5,"bodyText":"厚度高；奶油般厚實"},"image":"./assets/bean-15.webp"},{"id":"bean-16","order":16,"categoryZh":"水洗 & 濕剝法","name":"水仙·多莓","englishName":"Narcissus","tastingNotes":"檸檬、柚子、蜂蜜、淡雅花香","infoZh":"衣索比亞 / 古吉 / 烏拉嘎多莓 / 淺中焙 / 水洗 74110","infoEn":"Ethiopia Oromia Guji Uraga Tome 74110 Washed","halfPoundPrice":400,"dripPrice":35,"recommendation":"推薦給想喝乾淨清爽水洗風格的客人。","review":{"overall":"柚子與檸檬的明亮酸質搭配蜂蜜甜感，花香柔和如春日微風。\n整體輕盈清爽，酸甜分明，乾淨又具層次，是晨間最佳開場風味。","aromaScore":8,"aromaText":"柑橘、花香","flavorScore":7.5,"flavorText":"柑橘、蜂蜜、柚子皮","acidityScore":8,"acidityText":"強度中等；柑橘酸質","sweetnessScore":7,"sweetnessText":"強度中等；蜂蜜甜感","bodyScore":6.5,"bodyText":"厚度中等；茶感滑順"},"image":"./assets/bean-16.webp"},{"id":"bean-17","order":17,"categoryZh":"水洗 & 濕剝法","name":"初光","englishName":"First Light","tastingNotes":"柑橘、水蜜桃、清雅白花、辛香料","infoZh":"衣索比亞 / 西達摩 / 淺焙 / 雙重厭氧水洗 古優種","infoEn":"Ethiopia Sidamo Heirloom Double Anaerobic Washed","halfPoundPrice":380,"dripPrice":33,"recommendation":"推薦給想喝細緻明亮風味的客人。","review":{"overall":"初綻放的白花芬芳與清爽柑橘酸質交織，帶出如晨曦般的輕盈明亮。蜜桃的柔和甜感與辛香尾韻平衡，展現優雅細緻的花果層次，清新脫俗。","aromaScore":8,"aromaText":"柑橘、白花、香料","flavorScore":8,"flavorText":"柑橘、白花、水蜜桃","acidityScore":7.5,"acidityText":"強度中等；柑橘酸質","sweetnessScore":7,"sweetnessText":"強度中等；紅糖甜感","bodyScore":6,"bodyText":"厚度中等；茶感滑順"},"image":"./assets/bean-17.webp"},{"id":"bean-18","order":18,"categoryZh":"水洗 & 濕剝法","name":"流金","englishName":"Golden Flow","tastingNotes":"柑橘、白花、蜂蜜甜感、金萱茶香","infoZh":"衣索比亞 / 古吉 / 淺焙 / 水洗 藝伎","infoEn":"Ethiopia Oromia Guji Gesha Washed","halfPoundPrice":380,"dripPrice":33,"recommendation":"推薦給想喝優雅精緻藝伎風格的客人。","review":{"overall":"花香清麗，與蜂蜜般的圓潤甜感交融，彷彿金光流動般細膩。茶韻尾調悠長，將果香與花香巧妙連結，帶來優雅精緻的風味體驗。","aromaScore":8,"aromaText":"茉莉、白花、柑橘","flavorScore":8.5,"flavorText":"柑橘、茉莉、金萱茶","acidityScore":7.5,"acidityText":"強度中等；蘋果酸質","sweetnessScore":8,"sweetnessText":"強度中偏高；蜂蜜甜感","bodyScore":7,"bodyText":"厚度中等；茶感滑順"},"image":"./assets/bean-18.webp"},{"id":"bean-19","order":19,"categoryZh":"日曬 & 蜜處理","name":"鳳桃花韻","englishName":"Blossom Rhyme","tastingNotes":"鳳﻿梨、水蜜桃、優雅白花","infoZh":"哥﻿斯大黎加&衣索比亞 / 中焙 / 配方 配方","infoEn":"Costa Rica & Ethiopia Blend Blend","halfPoundPrice":480,"dripPrice":38,"recommendation":"推薦給想要果香明亮又適合日常分享的客人。","review":{"overall":"白花的優雅香氣與鳳梨的明亮果甜相互映襯，水蜜桃柔和甜潤的質地讓整體更顯輕盈與圓潤。酸甜交錯、乾淨清透，像春日微風中飄散的花香般自然動人。","aromaScore":8.0,"aromaText":"白花、鳳梨、水蜜桃","flavorScore":8.5,"flavorText":"水蜜桃、鳳梨、白花","acidityScore":7.0,"acidityText":"強度中等；果酸柔和","sweetnessScore":8.0,"sweetnessText":"強度中偏高；蜂蜜甜感","bodyScore":6.5,"bodyText":"厚度中等；滑順柔和"},"image":"./assets/bean-19.webp"},{"id":"bean-20","order":20,"categoryZh":"日曬 & 蜜處理","name":"黃金曼巴","englishName":"Golden Mamba","tastingNotes":"草本、焦糖﻿、奶油、巧克力﻿","infoZh":"印尼&巴西 / 中深焙 / 配方 配方","infoEn":"Indonesia & Brazil Blend Blend","halfPoundPrice":380,"dripPrice":33,"recommendation":"推薦給想喝低酸厚實中深焙配方的客人。","review":{"overall":"草本調性明顯，結合焦糖、奶油與巧克力，呈現厚實穩定的中深焙配方感。酸質收斂，甜感偏焦糖化，適合喜歡濃郁、低酸、帶厚度與苦甜尾韻的客人。","aromaScore":7,"aromaText":"草本、焦糖、巧克力","flavorScore":7.5,"flavorText":"焦糖、奶油、巧克力","acidityScore":5,"acidityText":"強度偏低；圓潤低酸","sweetnessScore":7.5,"sweetnessText":"強度中等；焦糖甜感","bodyScore":8,"bodyText":"厚度中高；厚實滑順"},"image":"./assets/bean-20.webp"},{"id":"bean-21","order":21,"categoryZh":"獨家配方","name":"豐收·義式配方","englishName":"Espresso Blend","tastingNotes":"葡萄、焦糖、可可、深色莓果","infoZh":"巴西 & 衣索比亞 / 中深焙 / 配方 配方","infoEn":"Brazil & Ethiopia Blend Blend","halfPoundPrice":195,"dripPrice":17,"recommendation":"推薦給黑咖啡和牛奶都適合的客人。","review":{"overall":"葡萄與深色莓果帶出配方中的果香主軸，焦糖與可可支撐中後段厚度。作為義式配方，風味有甜感、有層次，酸質不會過度突出，適合拿鐵與美式，也能保留黑咖啡的果香辨識度。","aromaScore":7.5,"aromaText":"葡萄、焦糖、可可","flavorScore":8,"flavorText":"葡萄、深色莓果、可可","acidityScore":6.5,"acidityText":"強度中等；莓果酸質","sweetnessScore":8,"sweetnessText":"強度中偏高；焦糖甜感","bodyScore":7.5,"bodyText":"厚度中高；可可感飽滿"},"image":"./assets/bean-21.webp"},{"id":"bean-22","order":22,"categoryZh":"獨家配方","name":"碩果·義式配方","englishName":"Espresso Blend","tastingNotes":"草莓、果乾、堅果","infoZh":"巴西 & 衣索比亞 / 中深焙 / 配方 配方","infoEn":"Brazil & Ethiopia Blend Blend","halfPoundPrice":195,"dripPrice":17,"recommendation":"推薦給想要有果香但仍穩定適合牛奶的義式客人。","review":{"overall":"草莓與果乾甜感清楚，堅果提供穩定基底，使整體在果香與義式厚度之間取得平衡。酸質柔和不銳利，甜感討喜，適合想要帶果香但仍需要牛奶相容性的義式使用情境。","aromaScore":7.5,"aromaText":"草莓、果乾、堅果","flavorScore":8,"flavorText":"草莓、果乾、堅果","acidityScore":6.5,"acidityText":"強度中等；莓果酸質柔和","sweetnessScore":8,"sweetnessText":"強度中偏高；果乾甜感","bodyScore":7,"bodyText":"厚度中等；堅果感圓潤"},"image":"./assets/bean-22.webp"},{"id":"bean-23","order":23,"categoryZh":"獨家配方","name":"白露·義式配方","englishName":"Espresso Blend","tastingNotes":"堅果、巧克力、玫瑰花香","infoZh":"巴西 & 衣索比亞 / 中深焙 / 配方 配方","infoEn":"Brazil & Ethiopia Blend Blend","halfPoundPrice":195,"dripPrice":17,"recommendation":"推薦給想喝經典厚實但不無聊的義式客人。","review":{"overall":"堅果與巧克力構成穩定厚實的基底，玫瑰花香提供少見的上揚感，讓中深焙義式不只停留在厚重與苦甜。整體甜感溫和、尾韻乾淨，適合喜歡經典但想保有些微花香層次的客人。","aromaScore":7.5,"aromaText":"堅果、巧克力、玫瑰","flavorScore":7.5,"flavorText":"堅果、巧克力、花香","acidityScore":5.5,"acidityText":"強度偏低；柔和酸質","sweetnessScore":7.5,"sweetnessText":"強度中等；巧克力甜感","bodyScore":8,"bodyText":"厚度中高；濃郁滑順"},"image":"./assets/bean-23.webp"},{"id":"bean-24","order":24,"categoryZh":"獨家配方","name":"夏至‧義式單品","englishName":"Single Origin Espresso","tastingNotes":"焦糖、可可、烤堅果","infoZh":"巴西 / 南米納斯 / 中深焙 / 日曬 黃波旁","infoEn":"Brazil Sul de Minas Yellow Bourbon Natural","halfPoundPrice":175,"dripPrice":15,"recommendation":"推薦給想要低酸、厚實、穩定中深焙義式的客人。","review":{"overall":"焦糖、可可與烤堅果是這支巴西日曬黃波旁的主軸，表現直接、穩定、厚實。酸質低而圓潤，甜感偏焦糖化，尾韻帶可可與烘烤堅果感，適合喜歡中深焙、低酸、濃郁義式風格的客人。","aromaScore":7,"aromaText":"焦糖、可可、烤堅果","flavorScore":7.5,"flavorText":"焦糖、可可、堅果","acidityScore":5,"acidityText":"強度偏低；柔和低酸","sweetnessScore":7,"sweetnessText":"強度中等；焦糖甜感","bodyScore":8,"bodyText":"厚度中高；厚實飽滿"},"image":"./assets/bean-24.webp"}];
 const categories = ["全部", "日曬 & 蜜處理", "水洗 & 濕剝法", "獨家配方", "綜合濾掛"];
@@ -1347,6 +1850,17 @@ const PAYMENT_LINE = "LINE PAY";
 const PAYMENT_PICKUP = "取貨付款";
 let recipientNameEdited = false;
 let recipientPhoneEdited = false;
+let productSheetState = {
+  productId: "",
+  mode: "quick-buy",
+  variantId: "",
+  quantity: 1,
+  note: "",
+  trigger: null,
+  adding: false,
+  dragStartY: null,
+  pageScrollY: 0,
+};
 
 const byId = function(id) { return document.getElementById(id); };
 const formatCurrency = function(value) {
@@ -1379,6 +1893,7 @@ function loadCart() {
         variant: String(item.variant),
         price: Math.round(Number(item.price)),
         quantity: Math.max(1, Math.round(Number(item.quantity))),
+        note: String(item.note || "").slice(0, 200),
       };
     }) : [];
   } catch (error) {
@@ -1425,6 +1940,7 @@ function variantList(product) {
       id: variant.id,
       label: variant.label,
       price: variant.price(product),
+      soldOut: Boolean(product.soldOut || variant.soldOut),
     };
   });
 }
@@ -1432,13 +1948,24 @@ function variantList(product) {
 function productCard(product) {
   const variants = variantList(product);
   const variantButtons = variants.map(function(variant) {
-    return '<button type="button" data-add="' + escapeHtml(product.id) + '" data-variant="' + escapeHtml(variant.id) + '">' + escapeHtml(variant.label) + ' ' + formatCurrency(variant.price) + '</button>';
+    const disabled = variant.soldOut ? ' disabled aria-disabled="true"' : "";
+    const suffix = variant.soldOut ? "（售完）" : "";
+    return '<button type="button" data-add="' + escapeHtml(product.id) + '" data-variant="' + escapeHtml(variant.id) + '"' + disabled + '>' + escapeHtml(variant.label) + suffix + ' ' + formatCurrency(variant.price) + '</button>';
   }).join("");
   const cardClass = product.kind === "assorted" ? "product-card assorted-card" : "product-card";
   const serial = product.kind === "assorted" ? "濾掛組合" : "No. " + String(product.order).padStart(2, "0");
   const recommendation = product.recommendation ? '<p class="recommendation">' + escapeHtml(product.recommendation) + '</p>' : "";
   const review = product.review ? '<button class="flavor-toggle" type="button" data-review-toggle="' + escapeHtml(product.id) + '" aria-expanded="false">收合風味說明 +</button>' + reviewBlock(product) : "";
   const image = product.image || "./assets/logo-main-transparent.png";
+  const availableVariants = variants.filter(function(variant) { return !variant.soldOut; });
+  const mobilePrice = product.kind === "assorted"
+    ? "起 " + formatCurrency(availableVariants.length ? Math.min.apply(null, availableVariants.map(function(variant) { return variant.price; })) : 0)
+    : "半磅 " + formatCurrency(product.halfPoundPrice) + "　濾掛 " + formatCurrency(product.dripPrice);
+  const quickBuyDisabled = availableVariants.length ? "" : ' disabled aria-disabled="true"';
+  const quickBuyText = availableVariants.length ? "選擇規格" : "暫時售完";
+  const detailTrigger = product.review
+    ? '<button class="mobile-detail-trigger" type="button" data-sheet-open="detail" data-product-id="' + escapeHtml(product.id) + '">查看詳情 ＋</button>'
+    : "";
 
   return '<article class="' + cardClass + '">' +
     '<div class="photo-slot" aria-label="' + escapeHtml(product.name) + ' 商品圖">' +
@@ -1452,6 +1979,11 @@ function productCard(product) {
       review +
       '<p class="info">' + escapeHtml(product.infoZh) + '</p>' +
       '<div class="variant-grid">' + variantButtons + '</div>' +
+      '<p class="mobile-card-price">' + mobilePrice + '</p>' +
+      '<div class="mobile-card-actions">' +
+        '<button class="mobile-quick-buy" type="button" data-sheet-open="quick-buy" data-product-id="' + escapeHtml(product.id) + '"' + quickBuyDisabled + '>' + quickBuyText + '</button>' +
+        detailTrigger +
+      '</div>' +
     '</div>' +
   '</article>';
 }
@@ -1468,21 +2000,32 @@ function findVariant(product, variantId) {
   return variantList(product).find(function(variant) { return variant.id === variantId; });
 }
 
-function addToCart(productId, variantId) {
+function addToCart(productId, variantId, quantity, note) {
   const product = allProducts.find(function(item) { return item.id === productId; });
-  if (!product) return;
+  if (!product) return false;
   const variant = findVariant(product, variantId);
-  if (!variant) return;
-  const key = productId + ":" + variantId;
+  if (!variant || variant.soldOut) return false;
+  const safeQuantity = Math.max(1, Math.min(99, Math.round(Number(quantity) || 1)));
+  const safeNote = String(note || "").trim().slice(0, 200);
+  const key = productId + ":" + variantId + (safeNote ? ":note:" + encodeURIComponent(safeNote) : "");
   const existing = cart.find(function(item) { return item.key === key; });
   if (existing) {
-    existing.quantity += 1;
+    existing.quantity += safeQuantity;
   } else {
-    cart.push({ key: key, productId: productId, name: product.name, variant: variant.label, price: variant.price, quantity: 1 });
+    cart.push({
+      key: key,
+      productId: productId,
+      name: product.name,
+      variant: variant.label,
+      price: variant.price,
+      quantity: safeQuantity,
+      note: safeNote,
+    });
   }
   saveCart();
   renderCart();
-  showToast("已加入購物車：" + product.name + "｜" + variant.label + " × 1");
+  showToast("已加入購物車：" + product.name + "｜" + variant.label + " × " + safeQuantity);
+  return true;
 }
 
 function updateQuantity(key, delta) {
@@ -1529,8 +2072,9 @@ function renderCart() {
     byId("cartItems").innerHTML = '<div class="empty">購物車目前是空的</div>';
   } else {
     byId("cartItems").innerHTML = cart.map(function(item) {
+      const itemNote = item.note ? '<span class="cart-item-note">備註：' + escapeHtml(item.note).replace(/\n/g, "<br>") + '</span>' : "";
       return '<div class="cart-item">' +
-        '<div class="cart-item-title"><strong>' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.variant) + ' / 單價 ' + formatCurrency(item.price) + '</span></div>' +
+        '<div class="cart-item-title"><strong>' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(item.variant) + ' / 單價 ' + formatCurrency(item.price) + '</span>' + itemNote + '</div>' +
         '<div class="cart-actions">' +
           '<div class="stepper">' +
             '<button class="icon-button" type="button" data-qty="' + escapeHtml(item.key) + '" data-delta="-1">-</button>' +
@@ -1720,6 +2264,166 @@ function flashAddedButton(button) {
   }, 1100);
 }
 
+function productSheetReviewRows(review) {
+  if (!review) return [];
+  return [
+    ["香氣", review.aromaScore, review.aromaText],
+    ["風味", review.flavorScore, review.flavorText],
+    ["酸質", review.acidityScore, review.acidityText],
+    ["甜感", review.sweetnessScore, review.sweetnessText],
+    ["口感", review.bodyScore, review.bodyText],
+    ["餘韻", review.aftertasteScore, review.aftertasteText],
+  ].filter(function(row) {
+    return row[1] !== undefined && row[1] !== null && String(row[2] || "").trim();
+  });
+}
+
+function setProductSheetBackgroundInert(inert) {
+  [document.querySelector(".site-header"), document.querySelector("main"), byId("mobileCartBar")].forEach(function(element) {
+    if (element) element.inert = inert;
+  });
+}
+
+function selectedProductSheetVariant() {
+  const product = allProducts.find(function(item) { return item.id === productSheetState.productId; });
+  return product ? findVariant(product, productSheetState.variantId) : null;
+}
+
+function updateProductSheetControls() {
+  const variant = selectedProductSheetVariant();
+  byId("sheetQuantity").textContent = String(productSheetState.quantity);
+  byId("sheetQtyMinus").disabled = productSheetState.quantity <= 1;
+  byId("sheetQtyPlus").disabled = productSheetState.quantity >= 99;
+  const addButton = byId("sheetAddButton");
+  addButton.disabled = !variant || variant.soldOut || productSheetState.adding;
+  addButton.textContent = variant
+    ? "加入購物車｜" + formatCurrency(variant.price * productSheetState.quantity)
+    : "請先選擇規格";
+}
+
+function openProductSheet(productId, mode, trigger) {
+  if (!window.matchMedia("(max-width: 767px)").matches) return;
+  const product = allProducts.find(function(item) { return item.id === productId; });
+  if (!product) return;
+  const variants = variantList(product);
+  const available = variants.filter(function(variant) { return !variant.soldOut; });
+  if (!available.length) {
+    showToast("此商品目前暫時售完");
+    return;
+  }
+
+  productSheetState = {
+    productId: product.id,
+    mode: mode === "detail" ? "detail" : "quick-buy",
+    variantId: available[0].id,
+    quantity: 1,
+    note: "",
+    trigger: trigger || document.activeElement,
+    adding: false,
+    dragStartY: null,
+    pageScrollY: window.scrollY,
+  };
+
+  byId("productSheetTitle").textContent = product.name;
+  byId("productSheetSubtitle").textContent = product.englishName || product.categoryZh || "";
+  const showDetail = productSheetState.mode === "detail" && Boolean(product.review);
+  byId("sheetDetail").hidden = !showDetail;
+  byId("sheetOverall").textContent = showDetail ? product.review.overall || "" : "";
+  byId("sheetScoreList").innerHTML = showDetail
+    ? productSheetReviewRows(product.review).map(function(row) {
+        return '<div class="sheet-score-row"><strong>' + escapeHtml(row[0]) + '</strong><span>' + escapeHtml(row[1]) + ' / 9</span><em>' + escapeHtml(row[2]) + '</em></div>';
+      }).join("")
+    : "";
+
+  byId("sheetVariants").innerHTML = variants.map(function(variant) {
+    const checked = variant.id === productSheetState.variantId ? " checked" : "";
+    const disabled = variant.soldOut ? " disabled" : "";
+    const soldOutClass = variant.soldOut ? " is-sold-out" : "";
+    const soldOutText = variant.soldOut ? "（售完）" : "";
+    return '<label class="sheet-variant' + soldOutClass + '">' +
+      '<input type="radio" name="sheetVariant" value="' + escapeHtml(variant.id) + '"' + checked + disabled + ' aria-label="' + escapeHtml(variant.label + soldOutText) + '">' +
+      '<span>' + escapeHtml(variant.label) + soldOutText + '</span>' +
+      '<strong class="sheet-variant-price">' + formatCurrency(variant.price) + '</strong>' +
+    '</label>';
+  }).join("");
+
+  byId("sheetNote").value = "";
+  byId("sheetNoteCount").textContent = "0 / 200";
+  byId("sheetError").hidden = true;
+  byId("sheetError").textContent = "";
+  byId("productSheetScroll").scrollTop = 0;
+  updateProductSheetControls();
+
+  const layer = byId("productSheetLayer");
+  layer.hidden = false;
+  layer.classList.remove("is-closing");
+  document.body.style.position = "fixed";
+  document.body.style.top = "-" + productSheetState.pageScrollY + "px";
+  document.body.style.left = "0";
+  document.body.style.right = "0";
+  document.body.style.width = "100%";
+  document.body.classList.add("product-sheet-open");
+  setProductSheetBackgroundInert(true);
+  window.requestAnimationFrame(function() {
+    layer.classList.add("is-open");
+    byId("productSheet").focus({ preventScroll: true });
+  });
+}
+
+function closeProductSheet() {
+  const layer = byId("productSheetLayer");
+  if (layer.hidden || layer.classList.contains("is-closing")) return;
+  layer.classList.remove("is-open");
+  layer.classList.add("is-closing");
+  window.setTimeout(function() {
+    layer.hidden = true;
+    layer.classList.remove("is-closing");
+    byId("productSheet").style.transform = "";
+    document.body.classList.remove("product-sheet-open");
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    setProductSheetBackgroundInert(false);
+    if (productSheetState.trigger && typeof productSheetState.trigger.focus === "function") {
+      productSheetState.trigger.focus({ preventScroll: true });
+    }
+    const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(0, productSheetState.pageScrollY);
+    window.requestAnimationFrame(function() {
+      document.documentElement.style.scrollBehavior = previousScrollBehavior;
+    });
+  }, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 250);
+}
+
+function addProductSheetSelection() {
+  if (productSheetState.adding) return;
+  const variant = selectedProductSheetVariant();
+  if (!variant || variant.soldOut) {
+    byId("sheetError").textContent = "請選擇可購買的規格";
+    byId("sheetError").hidden = false;
+    return;
+  }
+  productSheetState.adding = true;
+  updateProductSheetControls();
+  const added = addToCart(
+    productSheetState.productId,
+    productSheetState.variantId,
+    productSheetState.quantity,
+    productSheetState.note,
+  );
+  if (added) {
+    closeProductSheet();
+    return;
+  }
+  productSheetState.adding = false;
+  byId("sheetError").textContent = "目前無法加入購物車，請稍後再試";
+  byId("sheetError").hidden = false;
+  updateProductSheetControls();
+}
+
 document.addEventListener("click", function(event) {
   const category = event.target.closest("[data-category]");
   if (category) {
@@ -1735,6 +2439,14 @@ document.addEventListener("click", function(event) {
     flashAddedButton(add);
   }
 
+  const sheetOpen = event.target.closest("[data-sheet-open]");
+  if (sheetOpen && !sheetOpen.disabled) {
+    openProductSheet(sheetOpen.dataset.productId, sheetOpen.dataset.sheetOpen, sheetOpen);
+  }
+
+  const sheetClose = event.target.closest("[data-sheet-close]");
+  if (sheetClose) closeProductSheet();
+
   const qty = event.target.closest("[data-qty]");
   if (qty) updateQuantity(qty.dataset.qty, Number(qty.dataset.delta));
 
@@ -1747,6 +2459,78 @@ document.addEventListener("click", function(event) {
     detail.hidden = isOpen;
   }
 });
+
+byId("sheetVariants").addEventListener("change", function(event) {
+  if (event.target.name !== "sheetVariant") return;
+  productSheetState.variantId = event.target.value;
+  byId("sheetError").hidden = true;
+  updateProductSheetControls();
+});
+
+byId("sheetQtyMinus").addEventListener("click", function() {
+  productSheetState.quantity = Math.max(1, productSheetState.quantity - 1);
+  updateProductSheetControls();
+});
+
+byId("sheetQtyPlus").addEventListener("click", function() {
+  productSheetState.quantity = Math.min(99, productSheetState.quantity + 1);
+  updateProductSheetControls();
+});
+
+byId("sheetNote").addEventListener("input", function(event) {
+  productSheetState.note = event.target.value.slice(0, 200);
+  byId("sheetNoteCount").textContent = productSheetState.note.length + " / 200";
+});
+
+byId("sheetAddButton").addEventListener("click", addProductSheetSelection);
+
+document.addEventListener("keydown", function(event) {
+  const layer = byId("productSheetLayer");
+  if (layer.hidden) return;
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeProductSheet();
+    return;
+  }
+  if (event.key !== "Tab") return;
+  const focusable = Array.from(byId("productSheet").querySelectorAll('button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+    .filter(function(element) { return element.offsetParent !== null; });
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
+
+const productSheetHandle = byId("productSheetHandle");
+productSheetHandle.addEventListener("pointerdown", function(event) {
+  productSheetState.dragStartY = event.clientY;
+  productSheetHandle.setPointerCapture?.(event.pointerId);
+  byId("productSheet").style.transition = "none";
+});
+
+productSheetHandle.addEventListener("pointermove", function(event) {
+  if (productSheetState.dragStartY === null) return;
+  const distance = Math.max(0, event.clientY - productSheetState.dragStartY);
+  byId("productSheet").style.transform = "translateY(" + distance + "px)";
+});
+
+function finishProductSheetDrag(event) {
+  if (productSheetState.dragStartY === null) return;
+  const distance = Math.max(0, event.clientY - productSheetState.dragStartY);
+  productSheetState.dragStartY = null;
+  byId("productSheet").style.transition = "";
+  byId("productSheet").style.transform = "";
+  if (distance > 96) closeProductSheet();
+}
+
+productSheetHandle.addEventListener("pointerup", finishProductSheetDrag);
+productSheetHandle.addEventListener("pointercancel", finishProductSheetDrag);
 
 byId("shippingMethod").addEventListener("change", function() {
   updateShippingFields();
@@ -1792,6 +2576,14 @@ byId("paymentToggle").addEventListener("click", function() {
 
 function orderPayload() {
   const total = totals();
+  const generalNote = byId("orderNote").value.trim();
+  const itemNotes = cart.filter(function(item) { return item.note; }).map(function(item) {
+    return item.name + "｜" + item.variant + "：" + item.note;
+  });
+  const combinedNote = [generalNote, itemNotes.length ? "商品備註：\n" + itemNotes.join("\n") : ""]
+    .filter(Boolean)
+    .join("\n\n")
+    .slice(0, 1000);
   return {
     customer: {
       name: byId("customerName").value.trim(),
@@ -1805,7 +2597,7 @@ function orderPayload() {
     shippingMethod: byId("shippingMethod").value,
     deliveryDetail: byId("deliveryDetail").value.trim(),
     paymentMethod: byId("paymentMethod").value,
-    note: byId("orderNote").value.trim(),
+    note: combinedNote,
     items: cart.map(function(item) {
       return {
         productId: item.productId,
@@ -1813,6 +2605,7 @@ function orderPayload() {
         variant: item.variant,
         price: item.price,
         quantity: item.quantity,
+        note: item.note || "",
       };
     }),
     totals: total,
