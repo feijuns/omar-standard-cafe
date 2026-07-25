@@ -1151,6 +1151,7 @@ th {
   }
 
   .product-card .product-body {
+    min-width: 0;
     gap: 5px;
   }
 
@@ -1163,7 +1164,7 @@ th {
 
   .product-card .product-name {
     overflow: hidden;
-    font-size: 19px;
+    font-size: 17px;
     line-height: 1.3;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1172,9 +1173,11 @@ th {
   .product-card .notes {
     display: -webkit-box;
     overflow: hidden;
+    max-width: 100%;
     color: var(--muted);
-    font-size: 14px;
-    line-height: 1.45;
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
@@ -1182,14 +1185,16 @@ th {
   .product-card .recommendation {
     display: -webkit-box;
     overflow: hidden;
+    max-width: 100%;
     min-height: 36px;
     padding: 5px 7px;
     border: 0;
     border-radius: 5px;
     background: #f4efe7;
     color: #6a5948;
-    font-size: 12px;
-    line-height: 1.45;
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
@@ -1201,7 +1206,7 @@ th {
   .mobile-card-price {
     display: block;
     color: var(--ink);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     line-height: 1.4;
   }
@@ -1218,16 +1223,17 @@ th {
     min-height: 44px;
     border-radius: 6px;
     font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
   }
 
   .mobile-quick-buy {
-    flex: 1 1 auto;
-    padding: 10px 12px;
+    flex: 0 0 72px;
+    padding: 10px;
     border: 1px solid var(--ink);
     background: var(--ink);
     color: #fff;
+    white-space: nowrap;
   }
 
   .mobile-detail-trigger {
@@ -1962,9 +1968,9 @@ function productCard(product) {
     ? "起 " + formatCurrency(availableVariants.length ? Math.min.apply(null, availableVariants.map(function(variant) { return variant.price; })) : 0)
     : "半磅 " + formatCurrency(product.halfPoundPrice) + "　濾掛 " + formatCurrency(product.dripPrice);
   const quickBuyDisabled = availableVariants.length ? "" : ' disabled aria-disabled="true"';
-  const quickBuyText = availableVariants.length ? "選擇規格" : "暫時售完";
+  const quickBuyText = availableVariants.length ? "選購" : "暫時售完";
   const detailTrigger = product.review
-    ? '<button class="mobile-detail-trigger" type="button" data-sheet-open="detail" data-product-id="' + escapeHtml(product.id) + '">查看詳情 ＋</button>'
+    ? '<button class="mobile-detail-trigger" type="button" data-sheet-open="detail" data-product-id="' + escapeHtml(product.id) + '">詳情 ＋</button>'
     : "";
 
   return '<article class="' + cardClass + '">' +

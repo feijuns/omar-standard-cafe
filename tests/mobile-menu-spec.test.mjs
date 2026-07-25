@@ -21,6 +21,17 @@ test("mobile product photos retain the desktop 2:3 portrait ratio", () => {
   );
 });
 
+test("mobile card typography stays compact and the quick-buy label does not wrap", () => {
+  assert.match(html, /\.product-card \.product-name[\s\S]*?font-size:\s*17px/);
+  assert.match(html, /\.product-card \.notes[\s\S]*?font-size:\s*11px/);
+  assert.match(html, /\.product-card \.recommendation[\s\S]*?font-size:\s*11px/);
+  assert.match(html, /\.product-card \.product-body\s*\{\s*min-width:\s*0/);
+  assert.match(html, /\.product-card \.notes[\s\S]*?overflow-wrap:\s*anywhere/);
+  assert.match(html, /\.mobile-quick-buy[\s\S]*?white-space:\s*nowrap/);
+  assert.match(html, /availableVariants\.length \? "選購" : "暫時售完"/);
+  assert.match(html, />詳情 ＋<\/button>/);
+});
+
 test("compact cards provide quick-buy and detail paths from shared products", () => {
   assert.match(html, /data-sheet-open="quick-buy"/);
   assert.match(html, /data-sheet-open="detail"/);
