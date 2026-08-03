@@ -1,4 +1,7 @@
 const ADMIN_EMAIL = "feijuns@gmail.com";
+// Deployment-safe fallback. Only the SHA-256 digest is stored in source, never
+// the admin token itself, so a Pages redeploy cannot silently remove access.
+const DEFAULT_ADMIN_TOKEN_SHA256 = "82fa3e6fe71af48f5d0e2789217748254424de1d953c72be504a9f0367a51782";
 
 function json(data, init = {}) {
   return new Response(JSON.stringify(data), {
@@ -10,16 +13,37 @@ function json(data, init = {}) {
   });
 }
 
-function isAdmin(request, env) {
+async function sha256(value) {
+  const bytes = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function secureEqual(left, right) {
+  if (left.length !== right.length) return false;
+  let mismatch = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+  return mismatch === 0;
+}
+
+async function isAdmin(request, env) {
   const allowedEmail = String(env.ADMIN_EMAIL || ADMIN_EMAIL).toLowerCase();
   const accessEmail = String(request.headers.get("cf-access-authenticated-user-email") || "").toLowerCase();
   if (accessEmail && accessEmail === allowedEmail) return true;
 
-  const configuredToken = env.ADMIN_TOKEN;
-  if (!configuredToken) return false;
   const url = new URL(request.url);
   const token = request.headers.get("x-admin-token") || url.searchParams.get("token");
-  return token === configuredToken;
+  if (!token) return false;
+
+  const configuredToken = String(env.ADMIN_TOKEN || "");
+  if (configuredToken && secureEqual(token, configuredToken)) return true;
+
+  const configuredHash = String(env.ADMIN_TOKEN_SHA256 || DEFAULT_ADMIN_TOKEN_SHA256).toLowerCase();
+  return secureEqual(await sha256(token), configuredHash);
 }
 
 function rowValue(value) {
@@ -28,8 +52,8 @@ function rowValue(value) {
 
 export async function onRequestGet(context) {
   try {
-    if (!isAdmin(context.request, context.env)) {
-      return json({ error: "沒有後台權限，請使用 Cloudflare Access 登入 feijuns@gmail.com，或設定 ADMIN_TOKEN 後以 /admin?token=你的密碼 進入。" }, { status: 401 });
+    if (!(await isAdmin(context.request, context.env))) {
+      return json({ error: "沒有後台權限，請使用管理員專用入口重新進入。" }, { status: 401 });
     }
     if (!context.env.DB) throw new Error("Cloudflare D1 尚未設定，請確認 DB binding。");
 

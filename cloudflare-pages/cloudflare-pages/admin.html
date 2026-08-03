@@ -961,7 +961,12 @@ function csvCell(value) {
 function authHeaders() {
   const params = new URLSearchParams(window.location.search);
   const urlToken = params.get("token");
-  if (urlToken) localStorage.setItem("omar-standard-admin-token", urlToken);
+  if (urlToken) {
+    localStorage.setItem("omar-standard-admin-token", urlToken);
+    params.delete("token");
+    const cleanQuery = params.toString();
+    history.replaceState(null, "", `${location.pathname}${cleanQuery ? `?${cleanQuery}` : ""}${location.hash}`);
+  }
   const token = urlToken || localStorage.getItem("omar-standard-admin-token");
   return token ? { "x-admin-token": token } : {};
 }
